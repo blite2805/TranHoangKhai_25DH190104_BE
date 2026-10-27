@@ -1,0 +1,24 @@
+﻿@model _25DH190104_TranHoangKhai_BE.Models.Category
+
+@* Giữ lại ID danh mục khi cập nhật *@
+@Html.HiddenFor(model => model.CategoryID)
+
+<div class="form-group">
+    <div class="control-label">Tên danh mục</div>
+
+    <div class="col-md-10">
+        @Html.EditorFor(
+            model => model.CategoryName,
+            new
+            {
+                htmlAttributes = new { @class = "form-control" }
+            }
+        )
+
+        @Html.ValidationMessageFor(
+            model => model.CategoryName,
+            "",
+            new { @class = "text-danger" }
+        )
+    </div>
+</div>
