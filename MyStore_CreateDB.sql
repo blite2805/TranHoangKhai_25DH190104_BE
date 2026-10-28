@@ -99,14 +99,14 @@ GO
 
 SET IDENTITY_INSERT dbo.Product ON;
 INSERT INTO dbo.Product (ProductID, CategoryID, ProductName, ProductDescription, ProductPrice, ProductImage) VALUES
-    (1, 1, N'iPhone 15 Pro Max',        N'iPhone 15 Pro Max 256GB Titan Tự Nhiên, mới chính hãng.',      32990000, 'https://picsum.photos/seed/iphone15/400/300'),
-    (2, 1, N'Samsung Galaxy S24 Ultra', N'Samsung Galaxy S24 Ultra 5G 512GB, bút S Pen tích hợp.',        28990000, 'https://picsum.photos/seed/samsungs24/400/300'),
-    (3, 2, N'MacBook Air M3',            N'MacBook Air M3 13-inch 8GB/256GB, nhẹ mỏng bền bỉ.',            25990000, 'https://picsum.photos/seed/macbookair/400/300'),
-    (4, 2, N'Laptop Lenovo IdeaPad Slim 5', N'Lenovo IdeaPad Slim 5 Core i5-13420H 16GB/512GB.',          14990000, 'https://picsum.photos/seed/lenovo/400/300'),
-    (5, 3, N'Tai nghe AirPods Pro 2',    N'AirPods Pro 2 (USB-C) chống ồn chủ động.',                       5990000, 'https://picsum.photos/seed/airpods/400/300'),
-    (6, 3, N'Sạc dự phòng Anker 20000mAh', N'Sạc dự phòng Anker PowerCore 20000mAh sạc nhanh 20W.',          790000, 'https://picsum.photos/seed/anker/400/300'),
-    (7, 4, N'Apple Watch Series 9',      N'Apple Watch Series 9 GPS 45mm viền nhôm.',                      11990000, 'https://picsum.photos/seed/applewatch/400/300'),
-    (8, 4, N'Xiaomi Watch S3',           N'Xiaomi Watch S3 AMOLED 1.43 inch, 5ATM, pin 15 ngày.',           3490000, 'https://picsum.photos/seed/xiaomiwatch/400/300');
+    (1, 1, N'iPhone 15 Pro Max',        N'iPhone 15 Pro Max 256GB Titan Tự Nhiên, mới chính hãng.',      32990000, '~/Content/Images/iphone_15_promax.png'),
+    (2, 1, N'Samsung Galaxy S24 Ultra', N'Samsung Galaxy S24 Ultra 5G 512GB, bút S Pen tích hợp.',        28990000, '~/Content/Images/samsung_s24_ultra.png'),
+    (3, 2, N'MacBook Air M3',            N'MacBook Air M3 13-inch 8GB/256GB, nhẹ mỏng bền bỉ.',            25990000, '~/Content/Images/macbook_air_m3.png'),
+    (4, 2, N'Laptop Lenovo IdeaPad Slim 5', N'Lenovo IdeaPad Slim 5 Core i5-13420H 16GB/512GB.',          14990000, '~/Content/Images/lenovo_ideapad.png'),
+    (5, 3, N'Tai nghe AirPods Pro 2',    N'AirPods Pro 2 (USB-C) chống ồn chủ động.',                       5990000, '~/Content/Images/airpods_pro2.png'),
+    (6, 3, N'Sạc dự phòng Anker 20000mAh', N'Sạc dự phòng Anker PowerCore 20000mAh sạc nhanh 20W.',          790000, '~/Content/Images/anker_powerbank.png'),
+    (7, 4, N'Apple Watch Series 9',      N'Apple Watch Series 9 GPS 45mm viền nhôm.',                      11990000, '~/Content/Images/apple_watch_series9.png'),
+    (8, 4, N'Xiaomi Watch S3',           N'Xiaomi Watch S3 AMOLED 1.43 inch, 5ATM, pin 15 ngày.',           3490000, '~/Content/Images/xiaomi_watch_s3.png');
 SET IDENTITY_INSERT dbo.Product OFF;
 GO
 
