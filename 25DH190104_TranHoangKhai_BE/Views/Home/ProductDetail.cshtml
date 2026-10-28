@@ -18,7 +18,7 @@
         <!-- Ảnh sản phẩm -->
         <div class="col-md-5 mb-4 text-center">
             <div class="border rounded p-3 shadow-sm bg-white">
-                <img src="@Url.Content(string.IsNullOrEmpty(Model.ProductImage) ? "https://placehold.co/400x300/e2e8f0/475569?text=MyStore" : Model.ProductImage)"
+                <img src="@Url.Content(string.IsNullOrEmpty(Model.ProductImage) ? "https://picsum.photos/seed/" + Model.ProductID + "/400/300" : Model.ProductImage)"
                      alt="@Model.ProductName"
                      class="img-fluid rounded"
                      style="max-height: 380px; object-fit: contain;" />
@@ -73,7 +73,7 @@
             {
                 <div class="col-md-3 col-sm-6 mb-4">
                     <div class="card h-100 shadow-sm">
-                        <img src="@Url.Content(string.IsNullOrEmpty(item.ProductImage) ? "https://placehold.co/400x300/e2e8f0/475569?text=MyStore" : item.ProductImage)"
+                        <img src="@Url.Content(string.IsNullOrEmpty(item.ProductImage) ? "https://picsum.photos/seed/" + item.ProductID + "/400/300" : item.ProductImage)"
                              class="card-img-top p-3"
                              alt="@item.ProductName"
                              style="height: 180px; object-fit: contain;" />

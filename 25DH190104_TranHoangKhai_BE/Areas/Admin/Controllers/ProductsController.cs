@@ -134,7 +134,7 @@ namespace _25DH190104_TranHoangKhai_BE.Areas.Admin.Controllers
                 }
                 else
                 {
-                    product.ProductImage = "https://placehold.co/400x300/e2e8f0/475569?text=MyStore";
+                    product.ProductImage = "";
                 }
 
                 SaveProduct(product, "Create");

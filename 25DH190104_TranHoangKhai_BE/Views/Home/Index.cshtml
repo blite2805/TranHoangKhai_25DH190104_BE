@@ -82,7 +82,7 @@
                         <div class="col-md-4 mb-4">
                             <div class="card h-100 shadow-sm border rounded bg-white">
                                 <div class="text-center p-3 bg-light border-bottom">
-                                    <img src="@Url.Content(string.IsNullOrEmpty(item.ProductImage) ? "https://placehold.co/400x300/e2e8f0/475569?text=MyStore" : item.ProductImage)"
+                                    <img src="@Url.Content(string.IsNullOrEmpty(item.ProductImage) ? "https://picsum.photos/seed/" + item.ProductID + "/400/300" : item.ProductImage)"
                                          class="card-img-top" alt="@item.ProductName" style="height: 180px; object-fit: contain;" />
                                 </div>
 
