@@ -351,4 +351,7 @@
   </Target>
   <Target Name="AfterBuild">
   </Target> -->
+  <ItemGroup>
+    <Content Include="Content\Images\*.png" />
+  </ItemGroup>
 </Project>
