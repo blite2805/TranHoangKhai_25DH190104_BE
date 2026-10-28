@@ -36,7 +36,7 @@ else
                 {
                     <tr>
                         <td class="text-center">
-                            <img src="@Url.Content(string.IsNullOrEmpty(item.ProductImage) ? "~/Content/images/default.png" : item.ProductImage)" alt="@item.ProductName" style="width: 70px; height: 70px; object-fit: cover;" class="rounded" />
+                            <img src="@Url.Content(string.IsNullOrEmpty(item.ProductImage) ? "https://placehold.co/400x300/e2e8f0/475569?text=MyStore" : item.ProductImage)" alt="@item.ProductName" style="width: 70px; height: 70px; object-fit: cover;" class="rounded" />
                         </td>
                         <td><strong>@item.ProductName</strong></td>
                         <td class="text-end">@item.UnitPrice.ToString("N0") VNĐ</td>
