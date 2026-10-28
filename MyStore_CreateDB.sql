@@ -93,6 +93,11 @@ INSERT INTO dbo.[User] (Username, [Password], UserRole) VALUES
     (N'khachhang',  N'123456', N'C');
 GO
 
+
+INSERT INTO dbo.Customer (CustomerName, CustomerPhone, CustomerEmail, CustomerAddress, Username) VALUES
+    (N'Khách Hàng', '0901234567', 'khachhang@example.com', N'123 Nguyễn Văn Linh, Quận 7, TP.HCM', 'khachhang');
+GO
+
 INSERT INTO dbo.Category (CategoryName) VALUES
     (N'Điện thoại'), (N'Laptop'), (N'Phụ kiện'), (N'Đồng hồ thông minh');
 GO
