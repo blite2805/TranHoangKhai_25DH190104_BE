@@ -140,11 +140,14 @@
     <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\CategoriesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Cart.cs" />
     <Compile Include="Models\CartItem.cs" />
+    <Compile Include="Models\CartService.cs" />
     <Compile Include="Models\Category.cs">
       <DependentUpon>MyStoreModel.tt</DependentUpon>
     </Compile>
@@ -184,6 +187,12 @@
       <DependentUpon>MyStoreModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModel\ProductSearchVM.cs" />
+    <Compile Include="Models\ViewModel\RegisterVM.cs" />
+    <Compile Include="Models\ViewModel\LoginVM.cs" />
+    <Compile Include="Models\ViewModel\PersonalMenuVM.cs" />
+    <Compile Include="Models\ViewModel\HomeProductVM.cs" />
+    <Compile Include="Models\ViewModel\ProductDetailVM.cs" />
+    <Compile Include="Models\ViewModel\CheckoutVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -262,21 +271,36 @@
     <Content Include="Views\Categories\Edit.cshtml" />
     <Content Include="Views\Categories\Index.cshtml" />
     <Content Include="Views\Categories\PVCreateEditCategory.cshtml" />
-    <Content Include="Views\User\Register.cshtml" />
-    <Content Include="Views\User\Login.cshtml" />
-    <Content Include="Views\Cart\Checkout.cshtml" />
-    <Content Include="Views\Cart\OrderSuccess.cshtml" />
     <Content Include="Views\Cart\Index.cshtml" />
-    <Content Include="Views\User\Profile.cshtml" />
-    <Content Include="Views\User\OrderHistory.cshtml" />
-    <Content Include="Views\User\OrderDetail.cshtml" />
+    <Content Include="Views\Cart\_PVSimilarProduct.cshtml" />
     <Content Include="Views\Home\ProductDetail.cshtml" />
+    <Content Include="Views\Home\ProductList.cshtml" />
+    <Content Include="Views\Home\_PVFeatureProduct.cshtml" />
+    <Content Include="Views\Home\_PVNewProduct.cshtml" />
+    <Content Include="Views\Home\_PVRelatedProduct.cshtml" />
+    <Content Include="Views\Home\_PVTopProduct.cshtml" />
+    <Content Include="Views\Account\Register.cshtml" />
+    <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Account\ProfileInfo.cshtml" />
+    <Content Include="Views\Order\Checkout.cshtml" />
+    <Content Include="Views\Order\OrderSuccess.cshtml" />
+    <Content Include="Views\Order\MyOrder.cshtml" />
+    <Content Include="Views\Order\OrderDetail.cshtml" />
+    <Content Include="Views\Shared\_CustomerLayout.cshtml" />
+    <Content Include="Views\Shared\_CategoriesPV.cshtml" />
+    <Content Include="Views\Shared\_PersonalMenuPV.cshtml" />
+    <Content Include="Content\myStyle\CustomerHome.css" />
+    <Content Include="Content\myStyle\CustomerDetailProduct.css" />
+    <Content Include="Content\images\banner_home.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Areas\Admin\Views\Categories\" />
     <Folder Include="Areas\Admin\Views\Products\" />
+    <Folder Include="Views\Account\" />
+    <Folder Include="Views\Order\" />
+    <Folder Include="Content\myStyle\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

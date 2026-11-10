@@ -1,0 +1,105 @@
+@using PagedList.Mvc
+@model PagedList.IPagedList<_25DH190104_TranHoangKhai_BE.Models.Product>
+@{
+    ViewBag.Title = "Danh sách sản phẩm";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+    var categories = ViewBag.Categories as IEnumerable<_25DH190104_TranHoangKhai_BE.Models.Category>;
+    int? selectedCategory = ViewBag.SelectedCategory;
+    string currentSort = ViewBag.CurrentSort as string;
+    string searchTerm = ViewBag.SearchTerm as string;
+    string ImgUrl(string productImage, int productId)
+    {
+        if (string.IsNullOrEmpty(productImage)) return Url.Content("~/Content/Images/shopping.webp");
+        if (productImage.StartsWith("http")) return productImage;
+        return Url.Content("~/Content/Images/" + productImage);
+    }
+}
+@* ProductList: model IPagedList<Product>. Dropdown danh mục + ô search + dropdown sắp xếp sortOrder + lưới + phân trang. Rỗng → "Không có dữ liệu". *@
+<div class="container mt-4 mb-5">
+    <h3 class="mb-4"><i class="fas fa-th-list me-2"></i> Danh sách sản phẩm</h3>
+
+    <!-- Bộ lọc: danh mục + tìm kiếm + sắp xếp (form GET) -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            @using (Html.BeginForm("ProductList", "Home", FormMethod.Get))
+            {
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label small font-weight-bold mb-1">Danh mục</label>
+                        <select name="categoryId" class="form-select form-control">
+                            <option value="">Tất cả danh mục</option>
+                            @if (categories != null)
+                            {
+                                foreach (var cat in categories)
+                                {
+                                    <option value="@cat.CategoryID" @(selectedCategory == cat.CategoryID ? "selected" : "")>@cat.CategoryName</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small font-weight-bold mb-1">Tìm kiếm</label>
+                        <input type="text" name="searchTerm" value="@searchTerm" class="form-control" placeholder="Tên sản phẩm..." />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small font-weight-bold mb-1">Sắp xếp</label>
+                        <select name="sortOrder" class="form-select form-control">
+                            <option value="">Mặc định</option>
+                            <option value="price_asc" @(currentSort == "price_asc" ? "selected" : "")>Giá tăng dần</option>
+                            <option value="price_desc" @(currentSort == "price_desc" ? "selected" : "")>Giá giảm dần</option>
+                            <option value="newest" @(currentSort == "newest" ? "selected" : "")>Mới nhất</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-grid">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-filter me-1"></i> Lọc</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-warning text-center py-5" role="alert">
+            <i class="fas fa-box-open fa-2x mb-2 d-block"></i>
+            <h5 class="mb-1">Không có dữ liệu</h5>
+            <p class="mb-0">Không tìm thấy sản phẩm nào phù hợp với bộ lọc.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card product-card h-100 shadow-sm border rounded bg-white">
+                        <div class="product-img-wrap text-center p-3 bg-light border-bottom">
+                            <img src="@ImgUrl(item.ProductImage, item.ProductID)" class="card-img-top product-img" alt="@item.ProductName" />
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="product-price text-primary fw-bold mb-1">@Convert.ToDecimal(item.ProductPrice).ToString("N0") VNĐ</h5>
+                            <h6 class="product-name text-truncate fw-bold text-dark mb-2" title="@item.ProductName">@item.ProductName</h6>
+                            <p class="card-text text-muted small mb-3">@(item.Category != null ? item.Category.CategoryName : "Sản phẩm")</p>
+                            <div class="mt-auto d-grid gap-2">
+                                @Html.ActionLink("Xem chi tiết", "ProductDetail", "Home", new { id = item.ProductID }, new { @class = "btn btn-outline-primary btn-sm rounded-pill" })
+                                @using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@item.ProductID" />
+                                    <input type="hidden" name="quantity" value="1" />
+                                    <button type="submit" class="btn btn-warning btn-sm text-dark fw-bold rounded-pill" style="background-color: #f39c12; border: none;">
+                                        <i class="fas fa-cart-plus me-1"></i> Thêm vào giỏ
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <!-- Phân trang — giữ lại bộ lọc khi chuyển trang -->
+        <div class="text-center mt-4">
+            @Html.PagedListPager(Model, page => Url.Action("ProductList", "Home", new { page, categoryId = selectedCategory, searchTerm, sortOrder = currentSort }), PagedListRenderOptions.Classic)
+        </div>
+    }
+</div>

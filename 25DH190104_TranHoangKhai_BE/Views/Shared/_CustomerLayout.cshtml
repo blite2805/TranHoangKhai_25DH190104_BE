@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - KHARI Store</title>
+    @* Bundle CSS chuẩn + bundle CSS riêng cho Customer Site (CustomerHome + CustomerDetailProduct + PagedList) *@
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/customerCss")
+    @Scripts.Render("~/bundles/modernizr")
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        /* Style thanh Header trên cùng giống mẫu KHARI Store (màu xám) */
+        .khari-header {
+            background-color: #f1f1f1;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        .dropdown-menu.show {
+            display: block !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Header giống mẫu KHARI Store -->
+    <div class="khari-header py-2 px-4 shadow-sm">
+        <div class="container d-flex justify-content-between align-items-center">
+            <!-- Logo / Tên Shop -->
+            <a href="@Url.Action("Index", "Home")" class="font-weight-bold text-dark text-decoration-none" style="letter-spacing: 2px; font-size: 24px;">
+                KHARI <span class="text-danger">Store</span>
+            </a>
+            <!-- Menu bên phải: Trang chủ, Danh mục (partial), Tài khoản (partial), Giỏ hàng -->
+            <ul class="nav align-items-center mb-0">
+                <li class="nav-item">
+                    <a class="nav-link text-dark fw-semibold" href="@Url.Action("Index", "Home")">
+                        <i class="fas fa-home me-1"></i> Trang chủ
+                    </a>
+                </li>
+                @* Partial menu danh mục sản phẩm (dropdown) *@
+                @Html.Partial("_CategoriesPV")
+                @* Partial menu tài khoản (chưa login / đã login) — giữ nguyên cơ chế dropdown JS như _Layout cũ *@
+                @Html.Partial("_PersonalMenuPV")
+                <!-- Biểu tượng Giỏ hàng (CartCount từ Session) -->
+                <li class="nav-item ms-3">
+                    <a class="nav-link text-dark fw-bold" href="@Url.Action("Index", "Cart")">
+                        <i class="fas fa-shopping-cart text-primary"></i> (<span class="text-danger">@(Session["CartCount"] ?? 0)</span>)
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- Nội dung chính của trang -->
+    <main class="container-fluid px-0 body-content">
+        @RenderBody()
+    </main>
+    <!-- Chân trang (Footer) — thông tin đề tài -->
+    <footer class="bg-dark text-white text-center py-4 mt-5">
+        <div class="container">
+            <p class="mb-1"><strong>KHARI Store</strong> — Đồ án môn Phát triển Web Backend</p>
+            <p class="mb-0">MSSV 25DH190104 — Trần Hoàng Khải &copy; @DateTime.Now.Year. All rights reserved.</p>
+        </div>
+    </footer>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    <!-- Script xử lý bật/tắt Dropdown mượt mà (giữ nguyên như _Layout cũ) -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var toggleBtn = document.getElementById("userDropdown");
+            var menu = document.getElementById("userDropdownMenu");
+            if (toggleBtn && menu) {
+                toggleBtn.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    menu.classList.toggle("show");
+                });
+                document.addEventListener("click", function (e) {
+                    var container = document.getElementById("userDropdownContainer");
+                    if (container && !container.contains(e.target)) {
+                        menu.classList.remove("show");
+                    }
+                });
+            }
+        });
+    </script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

@@ -25,7 +25,12 @@ namespace _25DH190104_TranHoangKhai_BE.Models
         public System.DateTime OrderDate { get; set; }
         public decimal TotalAmount { get; set; }
         public string PaymentStatus { get; set; }
-        public string AddressDelivery { get; set; }
+        // Phần 3: đổi tên từ AddressDelivery thành ShippingAddress (đồng bộ với Update_Part3.sql / sp_rename)
+        public string ShippingAddress { get; set; }
+        // Phần 3: phương thức giao hàng (ví dụ: Giao hàng tiêu chuẩn / Nhanh)
+        public string DeliveryMethod { get; set; }
+        // Phần 3: phương thức thanh toán (ví dụ: COD / Chuyển khoản)
+        public string PaymentMethod { get; set; }
     
         public virtual Customer Customer { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

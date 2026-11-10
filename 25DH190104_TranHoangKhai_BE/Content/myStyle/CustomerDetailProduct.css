@@ -1,0 +1,53 @@
+/* ============================================================
+   CustomerDetailProduct.css — Style cho trang chi tiết sản phẩm
+   KHARI Store (Phần 3 Customer Site)
+   Cắt style inline từ Views/Home/ProductDetail.cshtml.
+   ============================================================ */
+
+/* --- Layout 2 cột: ảnh + thông tin --- */
+.detail-product-row {
+    gap: 0;
+}
+.detail-img-box {
+    min-height: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.detail-product-img {
+    max-height: 380px;
+    object-fit: contain;
+}
+.detail-info-col {
+    padding-left: 1.5rem;
+}
+.detail-product-name {
+    font-size: 1.75rem;
+}
+.detail-product-price {
+    font-size: 1.6rem;
+}
+.detail-product-desc {
+    line-height: 1.6;
+}
+
+/* --- Ô nhập số lượng --- */
+.detail-qty-input {
+    width: 80px;
+}
+
+/* --- Nút thêm vào giỏ --- */
+.detail-add-btn {
+    background-color: #f39c12;
+    border: none;
+    transition: background 0.2s;
+}
+.detail-add-btn:hover {
+    background-color: #e67e22;
+    color: #fff;
+}
+
+/* --- Badge trạng thái --- */
+.detail-info-col .badge {
+    font-size: 0.85rem;
+}

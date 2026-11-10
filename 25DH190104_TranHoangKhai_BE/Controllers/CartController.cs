@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
@@ -6,71 +6,53 @@ using _25DH190104_TranHoangKhai_BE.Models;
 
 namespace _25DH190104_TranHoangKhai_BE.Controllers
 {
+    // CartController (viết lại Phần 3) — BỎ action Checkout / OrderSuccess (đã chuyển sang OrderController).
+    // Giữ nguyên cơ chế UserCarts static (delegate qua CartService) để khôi phục giỏ khi login/logout.
     public class CartController : Controller
     {
         private MyStoreEntities db = new MyStoreEntities();
 
-        // Bộ nhớ lưu trữ giỏ hàng tạm theo Username (Chống mất giỏ hàng khi Logout)
-        private static Dictionary<string, List<CartItem>> UserCarts = new Dictionary<string, List<CartItem>>();
-
-        // Hàm hỗ trợ đồng bộ giỏ hàng theo Username
+        // Giữ 2 method static để AccountController gọi (delegate sang CartService).
         public static void SyncUserCart(string username, List<CartItem> cart)
         {
-            if (!string.IsNullOrEmpty(username))
-            {
-                UserCarts[username] = cart;
-            }
+            CartService.SyncUserCart(username, cart);
         }
-
-        // Hàm hỗ trợ lấy giỏ hàng đã lưu của User
         public static List<CartItem> GetUserCart(string username)
         {
-            if (!string.IsNullOrEmpty(username) && UserCarts.ContainsKey(username))
-            {
-                return UserCarts[username];
-            }
-            return null;
+            return CartService.GetUserCart(username);
         }
 
-        // Lấy giỏ hàng từ Session hoặc bộ nhớ đệm của User
+        // Helper: lấy giỏ từ Session qua CartService, đồng bộ vào UserCarts nếu đã login
         private List<CartItem> GetCart()
         {
-            List<CartItem> cart = Session["Cart"] as List<CartItem>;
+            List<CartItem> cart = CartService.GetCart(Session);
             string username = Session["Username"] as string;
-
-            if (cart == null)
-            {
-                // Thử khôi phục từ bộ nhớ đệm nếu user đã đăng nhập
-                if (!string.IsNullOrEmpty(username) && UserCarts.ContainsKey(username))
-                {
-                    cart = UserCarts[username];
-                }
-                else
-                {
-                    cart = new List<CartItem>();
-                }
-                Session["Cart"] = cart;
-            }
-
-            // Đồng bộ ngược lại bộ nhớ nếu đang đăng nhập
             if (!string.IsNullOrEmpty(username))
             {
-                UserCarts[username] = cart;
+                CartService.SyncUserCart(username, cart);
             }
-
-            Session["CartCount"] = cart.Sum(item => item.Quantity);
+            Session["CartCount"] = cart.Sum(i => i.Quantity);
             return cart;
         }
 
-        // 1. TRANG XEM GIỎ HÀNG
+        // Action đơn giản (giữ tên cũ / health-check)
+        public ActionResult GetCartService()
+        {
+            return Content("ok");
+        }
+
+        // GET: Cart/Index — hiển thị giỏ hàng (view nhóm theo Category)
         public ActionResult Index()
         {
             List<CartItem> cart = GetCart();
-            ViewBag.TotalAmount = cart.Sum(item => item.TotalPrice);
+            ViewBag.TotalAmount = cart.Sum(i => i.TotalPrice);
+            // [1] CHUA CO DU LIEU: cart rỗng -> view hiển thị "Không có dữ liệu"
             return View(cart);
         }
 
-        // 2. THÊM SẢN PHẨM VÀO GIỎ HÀNG
+        // POST: Cart/AddToCart — thêm sản phẩm vào giỏ (trùng ProductID thì cộng dồn Quantity)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult AddToCart(int id, int quantity = 1)
         {
             var product = db.Products.Find(id);
@@ -78,11 +60,20 @@ namespace _25DH190104_TranHoangKhai_BE.Controllers
             {
                 return HttpNotFound();
             }
-
+            // [6] SO AM: quantity <= 0 -> từ chối, báo lỗi qua TempData
+            if (quantity <= 0)
+            {
+                TempData["ErrorMessage"] = "Số lượng phải lớn hơn 0.";
+                return RedirectToAction("Index");
+            }
             List<CartItem> cart = GetCart();
-            CartItem item = cart.FirstOrDefault(p => p.ProductID == id);
-
-            if (item == null)
+            // [3] THEM TRUNG: trùng ProductID -> cộng dồn Quantity
+            CartItem existing = cart.FirstOrDefault(p => p.ProductID == id);
+            if (existing != null)
+            {
+                existing.Quantity += quantity;
+            }
+            else
             {
                 cart.Add(new CartItem
                 {
@@ -90,173 +81,95 @@ namespace _25DH190104_TranHoangKhai_BE.Controllers
                     ProductName = product.ProductName,
                     ProductImage = product.ProductImage,
                     UnitPrice = Convert.ToDecimal(product.ProductPrice),
-                    Quantity = quantity
+                    Quantity = quantity,
+                    // Gán CategoryID/CategoryName để view nhóm giỏ theo danh mục
+                    CategoryID = product.CategoryID,
+                    CategoryName = product.Category != null ? product.Category.CategoryName : ""
                 });
             }
-            else
-            {
-                item.Quantity += quantity;
-            }
-
-            // Lưu và đồng bộ
-            Session["Cart"] = cart;
+            // Lưu Session + đồng bộ vào tài khoản nếu đã login
+            CartService.SaveCart(Session, cart);
             string username = Session["Username"] as string;
             if (!string.IsNullOrEmpty(username))
             {
-                UserCarts[username] = cart;
+                CartService.SyncUserCart(username, cart);
             }
-
-            GetCart();
-            return RedirectToAction("Index");
-        }
-
-        // 3. CẬP NHẬT SỐ LƯỢNG SẢN PHẨM TRONG GIỎ
-        [HttpPost]
-        public ActionResult UpdateCart(int id, int quantity)
-        {
-            // 1. Lấy giỏ hàng hiện tại trực tiếp từ Session hoặc bộ nhớ User
-            List<CartItem> cart = Session["Cart"] as List<CartItem>;
-            string username = Session["Username"] as string;
-
-            if (cart == null)
-            {
-                cart = GetCart();
-            }
-
-            // 2. Tìm sản phẩm cần cập nhật trong giỏ
-            CartItem item = cart.FirstOrDefault(p => p.ProductID == id);
-
-            if (item != null)
-            {
-                if (quantity > 0)
-                {
-                    item.Quantity = quantity; // Cập nhật số lượng mới
-                }
-                else
-                {
-                    cart.Remove(item); // Nếu số lượng <= 0 thì xóa sản phẩm
-                }
-            }
-
-            // 3. Cập nhật lại Session và bộ nhớ đệm ngay lập tức
-            Session["Cart"] = cart;
             Session["CartCount"] = cart.Sum(i => i.Quantity);
-
-            if (!string.IsNullOrEmpty(username))
-            {
-                UserCarts[username] = cart; // Đồng bộ vào bộ nhớ tĩnh theo tài khoản
-            }
-
             return RedirectToAction("Index");
         }
 
-        // 4. XÓA MỘT SẢN PHẨM KHỎI GIỎ
+        // POST: Cart/RemoveFromCart — xóa một sản phẩm khỏi giỏ
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult RemoveFromCart(int id)
         {
             List<CartItem> cart = GetCart();
             CartItem item = cart.FirstOrDefault(p => p.ProductID == id);
-
             if (item != null)
             {
                 cart.Remove(item);
             }
-
-            Session["Cart"] = cart;
+            CartService.SaveCart(Session, cart);
             string username = Session["Username"] as string;
             if (!string.IsNullOrEmpty(username))
             {
-                UserCarts[username] = cart;
+                CartService.SyncUserCart(username, cart);
             }
-
-            GetCart();
+            Session["CartCount"] = cart.Sum(i => i.Quantity);
             return RedirectToAction("Index");
         }
 
-        // 5. TRANG THANH TOÁN (CHECKOUT)
-        [HttpGet]
-        public ActionResult Checkout()
+        // GET: Cart/ClearCart — xóa toàn bộ giỏ hàng
+        public ActionResult ClearCart()
         {
-            if (Session["Username"] == null)
-            {
-                return RedirectToAction("Login", "User");
-            }
-
             List<CartItem> cart = GetCart();
-            if (cart.Count == 0)
+            cart.Clear();
+            CartService.SaveCart(Session, cart);
+            string username = Session["Username"] as string;
+            if (!string.IsNullOrEmpty(username))
             {
-                return RedirectToAction("Index", "Home");
+                CartService.SyncUserCart(username, cart);
             }
-
-            ViewBag.TotalAmount = cart.Sum(item => item.TotalPrice);
-            return View(cart);
+            Session["CartCount"] = 0;
+            return RedirectToAction("Index");
         }
 
-        // 6. XỬ LÝ ĐẶT HÀNG (LƯU VÀO CSDL: ORDER & ORDERDETAIL)
+        // POST: Cart/UpdateQuantity — cập nhật số lượng (quantity <= 0 -> xóa item)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Checkout(FormCollection collection)
+        public ActionResult UpdateQuantity(int id, int quantity)
         {
-            if (Session["Username"] == null)
-            {
-                return RedirectToAction("Login", "User");
-            }
-
             List<CartItem> cart = GetCart();
-            if (cart.Count == 0)
+            CartItem item = cart.FirstOrDefault(p => p.ProductID == id);
+            if (item != null)
             {
-                return RedirectToAction("Index", "Home");
-            }
-
-            Customer currentCustomer = Session["Customer"] as Customer;
-            string username = Session["Username"].ToString();
-
-            if (currentCustomer == null)
-            {
-                currentCustomer = db.Customers.FirstOrDefault(c => c.Username == username);
-            }
-
-            string addressDelivery = collection["AddressDelivery"];
-            if (string.IsNullOrWhiteSpace(addressDelivery) && currentCustomer != null)
-            {
-                addressDelivery = currentCustomer.CustomerAddress;
-            }
-
-            // 1. Tạo Đơn hàng mới (Order)
-            Order order = new Order
-            {
-                CustomerID = currentCustomer != null ? currentCustomer.CustomerID : 0,
-                OrderDate = DateTime.Now,
-                TotalAmount = cart.Sum(i => i.TotalPrice),
-                AddressDelivery = addressDelivery
-            };
-
-            db.Orders.Add(order);
-            db.SaveChanges();
-
-            // 2. Tạo Chi tiết đơn hàng (OrderDetail)
-            foreach (var item in cart)
-            {
-                OrderDetail detail = new OrderDetail
+                // [6] SO AM: quantity <= 0 -> xóa item khỏi giỏ
+                if (quantity <= 0)
                 {
-                    OrderID = order.OrderID,
-                    ProductID = item.ProductID,
-                    Quantity = item.Quantity,
-                    UnitPrice = item.UnitPrice
-                };
-                db.OrderDetails.Add(detail);
+                    cart.Remove(item);
+                }
+                else
+                {
+                    item.Quantity = quantity;
+                }
             }
-
-            db.SaveChanges();
-
-            // 3. Xóa giỏ hàng sau khi đặt thành công
-            Session["Cart"] = null;
-            Session["CartCount"] = 0;
-            if (UserCarts.ContainsKey(username))
+            CartService.SaveCart(Session, cart);
+            string username = Session["Username"] as string;
+            if (!string.IsNullOrEmpty(username))
             {
-                UserCarts.Remove(username); // Xóa giỏ hàng đã thanh toán khỏi bộ nhớ
+                CartService.SyncUserCart(username, cart);
             }
+            Session["CartCount"] = cart.Sum(i => i.Quantity);
+            return RedirectToAction("Index");
+        }
 
-            return View("OrderSuccess", order);
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

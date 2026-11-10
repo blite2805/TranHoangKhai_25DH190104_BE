@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace _25DH190104_TranHoangKhai_BE.Models
 {
@@ -10,7 +10,11 @@ namespace _25DH190104_TranHoangKhai_BE.Models
         public decimal UnitPrice { get; set; }
         public int Quantity { get; set; }
 
-        // Tính thành tiền cho từng sản phẩm
+        // Thêm cho Phần 3: dùng để nhóm giỏ theo danh mục (Cart.GroupedItems)
+        public int CategoryID { get; set; }
+        public string CategoryName { get; set; }
+
+        // Tính thành tiền cho từng sản phẩm (get-only)
         public decimal TotalPrice
         {
             get { return Quantity * UnitPrice; }

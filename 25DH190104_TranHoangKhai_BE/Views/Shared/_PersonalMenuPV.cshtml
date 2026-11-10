@@ -1,0 +1,49 @@
+@* Partial: menu tài khoản cá nhân.
+   Dùng trực tiếp Session["Username"] như _Layout cũ (không phụ thuộc ViewModel).
+   Chưa login → Đăng ký (~/Account/Register) + Đăng nhập (~/Account/Login).
+   Đã login → Hello + Thông tin tài khoản (~/Account/ProfileInfo) + Lịch sử mua hàng (~/Order/MyOrder) + Đăng xuất (~/Account/Logout).
+   Giữ nguyên id userDropdown / userDropdownMenu / userDropdownContainer để script dropdown JS trong _CustomerLayout hoạt động. *@
+@if (Session["Username"] != null)
+{
+    <!-- Dropdown khi đã đăng nhập -->
+    <li class="nav-item dropdown" style="position: relative;" id="userDropdownContainer">
+        <a class="nav-link text-dark dropdown-toggle fw-semibold" href="javascript:void(0);" id="userDropdown">
+            <i class="fas fa-user me-1"></i> Hello, @Session["Username"]
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end shadow border-0" id="userDropdownMenu" style="position: absolute; right: 0;">
+            <li>
+                <a class="dropdown-item" href="@Url.Action("ProfileInfo", "Account")">
+                    <i class="fas fa-id-card me-2"></i> Thông tin tài khoản
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="@Url.Action("MyOrder", "Order")">
+                    <i class="fas fa-history me-2"></i> Lịch sử mua hàng
+                </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <a class="dropdown-item text-danger" href="@Url.Action("Logout", "Account")">
+                    <i class="fas fa-sign-out-alt me-2"></i> Đăng xuất
+                </a>
+            </li>
+        </ul>
+    </li>
+}
+else
+{
+    <!-- Dropdown Tài khoản khi chưa đăng nhập -->
+    <li class="nav-item dropdown" style="position: relative;" id="userDropdownContainer">
+        <a class="nav-link text-dark dropdown-toggle fw-semibold" href="javascript:void(0);" id="userDropdown">
+            <i class="fas fa-user me-1"></i> Tài khoản
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end shadow border-0" id="userDropdownMenu" style="position: absolute; right: 0;">
+            <li>
+                <a class="dropdown-item" href="@Url.Action("Register", "Account")">Đăng ký</a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="@Url.Action("Login", "Account")">Đăng nhập</a>
+            </li>
+        </ul>
+    </li>
+}

@@ -1,0 +1,48 @@
+@* Partial: menu danh mục sản phẩm (dropdown trong header).
+   Lấy danh sách từ ViewBag.Categories (IEnumerable<Category>) do controller đặt.
+   Mỗi mục link tới Home/ProductList?categoryId=... (theo spec Phần 3). *@
+@{
+    var categories = ViewBag.Categories as IEnumerable<_25DH190104_TranHoangKhai_BE.Models.Category>;
+}
+@if (categories != null && categories.Any())
+{
+    <li class="nav-item dropdown" style="position: relative;" id="categoryDropdownContainer">
+        <a class="nav-link text-dark dropdown-toggle fw-semibold" href="javascript:void(0);" id="categoryDropdown">
+            <i class="fas fa-list me-1"></i> Danh mục
+        </a>
+        <ul class="dropdown-menu shadow border-0" id="categoryDropdownMenu" style="position: absolute; right: 0;">
+            <li>
+                <a class="dropdown-item" href="@Url.Action("ProductList", "Home")">
+                    <i class="fas fa-th-large me-2"></i> Tất cả sản phẩm
+                </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            @foreach (var cat in categories)
+            {
+                <li>
+                    <a class="dropdown-item" href="@Url.Action("ProductList", "Home", new { categoryId = cat.CategoryID })">
+                        @cat.CategoryName
+                    </a>
+                </li>
+            }
+        </ul>
+    </li>
+    <script>
+        // Dropdown cho menu Danh mục (cơ chế tương tự menu tài khoản)
+        document.addEventListener("DOMContentLoaded", function () {
+            var t = document.getElementById("categoryDropdown");
+            var m = document.getElementById("categoryDropdownMenu");
+            if (t && m) {
+                t.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    m.classList.toggle("show");
+                });
+                document.addEventListener("click", function (e) {
+                    var c = document.getElementById("categoryDropdownContainer");
+                    if (c && !c.contains(e.target)) { m.classList.remove("show"); }
+                });
+            }
+        });
+    </script>
+}

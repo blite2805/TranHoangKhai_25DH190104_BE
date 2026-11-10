@@ -25,6 +25,12 @@ namespace _25DH190104_TranHoangKhai_BE
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
+
+            // Phần 3: bundle CSS dành cho Customer Site (2 file myStyle do agent Views tao + PagedList.css)
+            bundles.Add(new StyleBundle("~/Content/customerCss").Include(
+                      "~/Content/myStyle/CustomerHome.css",
+                      "~/Content/myStyle/CustomerDetailProduct.css",
+                      "~/Content/PagedList.css"));
         }
     }
 }

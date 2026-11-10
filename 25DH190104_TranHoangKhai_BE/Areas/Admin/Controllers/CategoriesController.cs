@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -58,6 +59,13 @@ namespace _25DH190104_TranHoangKhai_BE.Areas.Admin.Controllers
 
                 ViewBag.CreateError = string.Join(" | ", errors);
 
+                return View(category);
+            }
+            // [3] THEM TRUNG: kiểm tra trùng CategoryName trước khi thêm
+            if (category.CategoryName != null
+                && db.Categories.Any(c => c.CategoryName == category.CategoryName.Trim()))
+            {
+                ModelState.AddModelError("CategoryName", "Tên danh mục này đã tồn tại!");
                 return View(category);
             }
 
@@ -221,6 +229,13 @@ namespace _25DH190104_TranHoangKhai_BE.Areas.Admin.Controllers
                 db.SaveChanges();
 
                 return RedirectToAction("Index");
+            }
+            // [2] XOA CONSTRAINT: bắt lỗi ràng buộc khóa ngoại khi xóa danh mục
+            catch (DbUpdateException)
+            {
+                TempData["DeleteError"] =
+                    "Không thể xóa danh mục do có ràng buộc dữ liệu liên quan.";
+                return RedirectToAction("Delete", new { id = id });
             }
             catch (Exception)
             {

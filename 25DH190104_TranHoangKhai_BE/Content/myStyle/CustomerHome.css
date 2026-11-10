@@ -1,0 +1,109 @@
+/* ============================================================
+   CustomerHome.css — Style cho trang chủ / danh sách sản phẩm
+   KHARI Store (Phần 3 Customer Site)
+   Cắt style inline từ Views/Home/Index + ProductList + các partial sản phẩm.
+   ============================================================ */
+
+/* --- Banner trang chủ --- */
+.home-banner {
+    background: linear-gradient(135deg, #2c3e50 0%, #4a6572 50%, #a93226 100%);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 350px;
+}
+.home-banner-overlay {
+    background-color: rgba(0, 0, 0, 0.35);
+}
+.home-cta-btn {
+    background-color: #f39c12;
+    border: none;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+.home-cta-btn:hover {
+    background-color: #e67e22;
+    color: #fff;
+}
+
+/* --- Tiêu đề section --- */
+.home-section-title {
+    color: #333;
+    font-size: 28px;
+}
+
+/* --- Ô tìm kiếm trung tâm --- */
+.home-search-box {
+    max-width: 600px;
+    margin: 0 auto;
+}
+.home-search-inner {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+.home-search-input {
+    flex: 1;
+    min-width: 0;
+    border: none !important;
+    outline: none !important;
+    padding: 10px 15px;
+    font-size: 14px;
+    height: 42px;
+    width: 100%;
+    box-shadow: none !important;
+}
+.home-search-btn {
+    background-color: #a93226;
+    color: white;
+    border: none;
+    padding: 0 25px;
+    height: 42px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.home-search-btn:hover {
+    background-color: #7b241c;
+}
+
+/* --- Card sản phẩm (dùng chung cho _PVFeatureProduct / _PVNewProduct / ProductList / Related / Top) --- */
+.product-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12) !important;
+}
+.product-img-wrap {
+    min-height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.product-img {
+    height: 180px;
+    object-fit: contain;
+    width: auto;
+    max-width: 100%;
+}
+.product-price {
+    font-size: 1.05rem;
+}
+.product-name {
+    font-size: 0.95rem;
+}
+
+/* --- Phân trang PagedList --- */
+.pagination .page-link {
+    color: #007bff;
+}
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #fff;
+}

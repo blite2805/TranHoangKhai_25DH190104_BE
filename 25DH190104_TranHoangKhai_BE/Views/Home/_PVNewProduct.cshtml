@@ -1,0 +1,52 @@
+@using PagedList.Mvc
+@model PagedList.IPagedList<_25DH190104_TranHoangKhai_BE.Models.Product>
+@* Partial: Sản phẩm mới (NewProducts) — kèm phân trang @Html.PagedListPager. Rỗng → "Không có dữ liệu". *@
+@{
+    string ImgUrl(string productImage, int productId)
+    {
+        if (string.IsNullOrEmpty(productImage)) return Url.Content("~/Content/Images/shopping.webp");
+        if (productImage.StartsWith("http")) return productImage;
+        return Url.Content("~/Content/Images/" + productImage);
+    }
+    string searchTerm = ViewBag.SearchTerm as string;
+}
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-warning text-center py-3" role="alert">Không có dữ liệu</div>
+}
+else
+{
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card product-card h-100 shadow-sm border rounded bg-white">
+                    <div class="product-img-wrap text-center p-3 bg-light border-bottom">
+                        <img src="@ImgUrl(item.ProductImage, item.ProductID)" class="card-img-top product-img" alt="@item.ProductName" />
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="product-price text-primary fw-bold mb-1">@Convert.ToDecimal(item.ProductPrice).ToString("N0") VNĐ</h5>
+                        <h6 class="product-name text-truncate fw-bold text-dark mb-2" title="@item.ProductName">@item.ProductName</h6>
+                        <p class="card-text text-muted small mb-3">@(item.Category != null ? item.Category.CategoryName : "Sản phẩm")</p>
+                        <div class="mt-auto d-grid gap-2">
+                            @Html.ActionLink("Xem chi tiết", "ProductDetail", "Home", new { id = item.ProductID }, new { @class = "btn btn-outline-primary btn-sm rounded-pill" })
+                            @using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@item.ProductID" />
+                                <input type="hidden" name="quantity" value="1" />
+                                <button type="submit" class="btn btn-warning btn-sm text-dark fw-bold rounded-pill" style="background-color: #f39c12; border: none;">
+                                    <i class="fas fa-cart-plus me-1"></i> Thêm vào giỏ
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    @* Phân trang — giữ lại searchTerm khi chuyển trang *@
+    <div class="text-center mt-4">
+        @Html.PagedListPager(Model, page => Url.Action("Index", "Home", new { page, searchTerm }), PagedListRenderOptions.Classic)
+    </div>
+}

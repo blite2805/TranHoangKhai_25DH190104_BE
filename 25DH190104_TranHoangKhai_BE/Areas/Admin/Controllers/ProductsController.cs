@@ -6,6 +6,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using PagedList;
 
 namespace _25DH190104_TranHoangKhai_BE.Areas.Admin.Controllers
@@ -124,6 +125,14 @@ namespace _25DH190104_TranHoangKhai_BE.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                // [3] THEM TRUNG: kiểm tra trùng ProductName trước khi thêm
+                if (product.ProductName != null
+                    && db.Products.Any(p => p.ProductName == product.ProductName.Trim()))
+                {
+                    ModelState.AddModelError("ProductName", "Tên sản phẩm này đã tồn tại!");
+                    LoadCategories(product.CategoryID);
+                    return View(product);
+                }
                 // Xử lý upload ảnh khi thêm mới
                 if (ImageFile != null && ImageFile.ContentLength > 0)
                 {
@@ -236,7 +245,16 @@ namespace _25DH190104_TranHoangKhai_BE.Areas.Admin.Controllers
                 return HttpNotFound();
             }
 
-            SaveProduct(product, "Delete");
+            try
+            {
+                SaveProduct(product, "Delete");
+            }
+            // [2] XOA CONSTRAINT: sản phẩm đang được tham chiếu bởi OrderDetail -> không xóa được, không crash
+            catch (DbUpdateException)
+            {
+                TempData["DeleteError"] = "Không thể xóa sản phẩm này vì đang có đơn hàng liên quan hoặc ràng buộc dữ liệu.";
+                return RedirectToAction("Delete", new { id = id });
+            }
 
             return RedirectToAction("Index");
         }

@@ -19,6 +19,10 @@ namespace _25DH190104_TranHoangKhai_BE.Models
         public int OrderID { get; set; }
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
+
+        // Phần 3: computed column PERSISTED trong SQL (TotalPrice AS (Quantity*UnitPrice) PERSISTED).
+        // EF KHÔNG cần insert giá trị này — SQL Server tự tính và lưu khi insert/update Quantity/UnitPrice.
+        public decimal TotalPrice { get; set; }
     
         public virtual Order Order { get; set; }
         public virtual Product Product { get; set; }

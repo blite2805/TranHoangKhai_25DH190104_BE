@@ -1,0 +1,73 @@
+@model _25DH190104_TranHoangKhai_BE.Models.RegisterVM
+@{
+    ViewBag.Title = "Đăng ký tài khoản";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+@* Validation: [Required][StringLength][RegularExpression] cho Username/Phone, [EmailAddress], [Compare] Password — hiển thị lỗi từng field *@
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6" style="max-width: 620px;">
+            <div class="card shadow border-0 rounded-lg">
+                <div class="card-header text-white text-center py-3" style="background-color: #007bff;">
+                    <h4 class="mb-0 font-weight-bold">
+                        <i class="fas fa-user-plus me-1"></i> ĐĂNG KÝ TÀI KHOẢN KHÁCH HÀNG
+                    </h4>
+                </div>
+                <div class="card-body p-4 bg-white">
+                    @using (Html.BeginForm("Register", "Account", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3 small" })
+
+                        <h6 class="text-secondary border-bottom pb-2 mb-3"><i class="fas fa-key me-1"></i> Thông tin tài khoản</h6>
+                        <div class="form-group mb-3">
+                            @Html.LabelFor(m => m.Username, "Tên đăng nhập:", new { @class = "font-weight-bold text-dark mb-1" })
+                            @Html.TextBoxFor(m => m.Username, new { @class = "form-control", placeholder = "Tên đăng nhập chỉ gồm chữ và số..." })
+                            @Html.ValidationMessageFor(m => m.Username, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="form-group mb-3">
+                            @Html.LabelFor(m => m.Password, "Mật khẩu:", new { @class = "font-weight-bold text-dark mb-1" })
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Tối thiểu 6 ký tự..." })
+                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="form-group mb-4">
+                            @Html.LabelFor(m => m.ConfirmPassword, "Xác nhận mật khẩu:", new { @class = "font-weight-bold text-dark mb-1" })
+                            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", placeholder = "Nhập lại mật khẩu..." })
+                            @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <h6 class="text-secondary border-bottom pb-2 mb-3"><i class="fas fa-id-card me-1"></i> Thông tin khách hàng</h6>
+                        <div class="form-group mb-3">
+                            @Html.LabelFor(m => m.CustomerName, "Họ tên khách hàng:", new { @class = "font-weight-bold text-dark mb-1" })
+                            @Html.TextBoxFor(m => m.CustomerName, new { @class = "form-control", placeholder = "Nhập họ tên đầy đủ..." })
+                            @Html.ValidationMessageFor(m => m.CustomerName, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="form-group mb-3">
+                            @Html.LabelFor(m => m.CustomerPhone, "Số điện thoại:", new { @class = "font-weight-bold text-dark mb-1" })
+                            @Html.TextBoxFor(m => m.CustomerPhone, new { @class = "form-control", placeholder = "Số điện thoại chỉ gồm chữ số..." })
+                            @Html.ValidationMessageFor(m => m.CustomerPhone, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="form-group mb-3">
+                            @Html.LabelFor(m => m.CustomerEmail, "Email:", new { @class = "font-weight-bold text-dark mb-1" })
+                            @Html.TextBoxFor(m => m.CustomerEmail, new { @class = "form-control", type = "email", placeholder = "Nhập email..." })
+                            @Html.ValidationMessageFor(m => m.CustomerEmail, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="form-group mb-4">
+                            @Html.LabelFor(m => m.CustomerAddress, "Địa chỉ:", new { @class = "font-weight-bold text-dark mb-1" })
+                            @Html.TextAreaFor(m => m.CustomerAddress, new { @class = "form-control", rows = "2", placeholder = "Nhập địa chỉ nhận hàng..." })
+                            @Html.ValidationMessageFor(m => m.CustomerAddress, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100 py-2 font-weight-bold">
+                            <i class="fas fa-check me-1"></i> Đăng ký ngay
+                        </button>
+                    }
+                    <div class="text-center mt-3">
+                        <span class="text-muted">Đã có tài khoản?</span>
+                        @Html.ActionLink("Đăng nhập ngay", "Login", "Account", null, new { @class = "text-primary font-weight-bold text-decoration-none" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

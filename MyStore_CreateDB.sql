@@ -63,7 +63,11 @@ CREATE TABLE dbo.[Order] (
     OrderDate       date              NOT NULL,
     TotalAmount     decimal(18,2)     NOT NULL,
     PaymentStatus   nvarchar(max)     NULL,
-    AddressDelivery nvarchar(max)     NOT NULL
+    -- Phần 3: đổi tên từ AddressDelivery thành ShippingAddress
+    ShippingAddress nvarchar(max)     NOT NULL,
+    -- Phần 3: phương thức giao hàng / thanh toán (cho phép NULL cho dữ liệu cũ)
+    DeliveryMethod  nvarchar(50)      NULL,
+    PaymentMethod   nvarchar(50)      NULL
 );
 GO
 
@@ -74,7 +78,9 @@ CREATE TABLE dbo.OrderDetail (
     OrderID   int               NOT NULL
         CONSTRAINT FK_OrderDetail_Order FOREIGN KEY REFERENCES dbo.[Order](OrderID),
     Quantity  int               NOT NULL,
-    UnitPrice decimal(18,2)     NOT NULL
+    UnitPrice decimal(18,2)     NOT NULL,
+    -- Phần 3: computed column PERSISTED — SQL tự tính, EF không insert
+    TotalPrice AS (Quantity * UnitPrice) PERSISTED
 );
 GO
 

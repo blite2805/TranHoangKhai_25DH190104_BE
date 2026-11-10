@@ -1,0 +1,47 @@
+@* OrderSuccess: thông báo đặt hàng thành công + OrderID.
+   Controller có thể truyền Order (model) hoặc int id (ViewBag.OrderID / Model) — xử lý cả hai trường hợp. *@
+@{
+    ViewBag.Title = "Đặt hàng thành công";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+    int orderId = 0;
+    decimal totalAmount = 0;
+    var orderObj = Model as _25DH190104_TranHoangKhai_BE.Models.Order;
+    if (orderObj != null)
+    {
+        orderId = orderObj.OrderID;
+        totalAmount = orderObj.TotalAmount;
+    }
+    else if (Model is int)
+    {
+        orderId = (int)Model;
+    }
+    else if (ViewBag.OrderID != null)
+    {
+        orderId = (int)ViewBag.OrderID;
+    }
+    if (ViewBag.TotalAmount != null)
+    {
+        totalAmount = (decimal)ViewBag.TotalAmount;
+    }
+}
+<div class="container text-center py-5" style="max-width: 600px;">
+    <div class="mb-3 text-success">
+        <i class="fas fa-check-circle fa-5x"></i>
+    </div>
+    <h1 class="text-success">Đặt hàng thành công!</h1>
+    <p class="fs-5 text-muted mt-3">Cảm ơn bạn đã mua sắm tại KHARI Store. Mã đơn hàng của bạn là:</p>
+    <h2 class="text-primary font-weight-bold mb-3">#@orderId</h2>
+    @if (totalAmount > 0)
+    {
+        <p>Tổng tiền: <strong class="text-danger fs-4">@totalAmount.ToString("N0") VNĐ</strong></p>
+    }
+    <p class="text-muted small">Bạn có thể theo dõi tình trạng đơn hàng tại mục Lịch sử mua hàng.</p>
+    <div class="mt-4 d-flex justify-content-center gap-2">
+        <a href="@Url.Action("MyOrder", "Order")" class="btn btn-outline-primary">
+            <i class="fas fa-history me-1"></i> Xem đơn hàng của tôi
+        </a>
+        <a href="@Url.Action("Index", "Home")" class="btn btn-primary">
+            <i class="fas fa-home me-1"></i> Trở về trang chủ
+        </a>
+    </div>
+</div>
