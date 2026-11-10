@@ -98,7 +98,8 @@ namespace _25DH190104_TranHoangKhai_BE.Areas.Admin.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            Product product = db.Products.Find(id);
+            // Include Category để view PVProductInfo đọc được product.Category.CategoryName (tránh NRE nếu lazy loading tắt)
+            Product product = db.Products.Include(p => p.Category).FirstOrDefault(p => p.ProductID == id);
 
             if (product == null)
             {
@@ -222,7 +223,8 @@ namespace _25DH190104_TranHoangKhai_BE.Areas.Admin.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            Product product = db.Products.Find(id);
+            // Include Category để view PVProductInfo đọc được product.Category.CategoryName (tránh NRE nếu lazy loading tắt)
+            Product product = db.Products.Include(p => p.Category).FirstOrDefault(p => p.ProductID == id);
 
             if (product == null)
             {

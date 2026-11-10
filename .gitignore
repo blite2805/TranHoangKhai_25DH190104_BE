@@ -185,6 +185,8 @@ publish/
 # Note: Comment the next line if you want to checkin your web deploy settings,
 # but database connection strings (with potential passwords) will be unencrypted
 *.pubxml
+# AzureWebApp.pubxml chỉ chứa placeholder (KHÔNG có mật khẩu, _SavePWD=False) → an toàn để commit, dùng cho GitHub Actions
+!25DH190104_TranHoangKhai_BE/Properties/PublishProfiles/AzureWebApp.pubxml
 *.publishproj
 
 # Microsoft Azure Web App publish settings. Comment the next line if you want to

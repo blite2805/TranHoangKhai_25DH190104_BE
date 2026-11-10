@@ -2,7 +2,7 @@
 
 @{
     ViewBag.Title = Model != null ? Model.ProductName : "Chi tiết sản phẩm";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
 <div class="container my-4">
@@ -17,11 +17,8 @@
         <div class="card-body p-4">
             @Html.Partial("PVProductInfo", Model)
 
-            <div class="mt-4 d-flex gap-2">
-                <a href="#" class="btn btn-primary btn-lg">
-                    <i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng
-                </a>
-                @Html.ActionLink("Quay lại trang chủ", "Index", "Home", null, new { @class = "btn btn-secondary btn-lg" })
+            <div class="mt-4">
+                @Html.ActionLink("Quay lại danh sách sản phẩm", "Index", "Products", new { area = "Admin" }, new { @class = "btn btn-secondary btn-lg" })
             </div>
         </div>
     </div>

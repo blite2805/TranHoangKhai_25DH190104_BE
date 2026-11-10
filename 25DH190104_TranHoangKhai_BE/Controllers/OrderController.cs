@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using _25DH190104_TranHoangKhai_BE.Models;
@@ -180,8 +181,10 @@ namespace _25DH190104_TranHoangKhai_BE.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.OrderDetails = db.OrderDetails.Where(d => d.OrderID == id).ToList();
-            return View(order);
+            // View Order/OrderDetail.cshtml expects Model = IEnumerable<OrderDetail> và đọc ViewBag.Order
+            ViewBag.Order = order;
+            var orderDetails = db.OrderDetails.Include(d => d.Product).Where(d => d.OrderID == id).ToList();
+            return View(orderDetails);
         }
 
         protected override void Dispose(bool disposing)

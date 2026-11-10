@@ -137,6 +137,7 @@
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\CategoriesController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProductsController.cs" />
+    <Compile Include="Areas\Admin\Controllers\ProductSearchVM.cs" />
     <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\CategoriesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -177,6 +178,7 @@
       <DependentUpon>MyStoreModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\PartialClasses.cs" />
+    <Compile Include="Models\ProductPartial.cs" />
     <Compile Include="Models\Product.cs">
       <DependentUpon>MyStoreModel.tt</DependentUpon>
     </Compile>
@@ -239,6 +241,7 @@
       <DependentUpon>MyStoreModel.edmx</DependentUpon>
     </Content>
     <Content Include="Areas\Admin\Views\web.config" />
+    <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Admin\Views\Shared\_AdminLayout.cshtml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
@@ -291,7 +294,41 @@
     <Content Include="Views\Shared\_PersonalMenuPV.cshtml" />
     <Content Include="Content\myStyle\CustomerHome.css" />
     <Content Include="Content\myStyle\CustomerDetailProduct.css" />
-    <Content Include="Content\images\banner_home.jpg" />
+    <Content Include="Content\PagedList.css" />
+    <Content Include="Content\Images\banner_home.jpg" />
+    <Content Include="Content\Images\shopping.webp" />
+    <Content Include="Content\Images\202afd3e-0f4c-4e62-b23d-4f777725ff5b.png" />
+    <Content Include="Content\Images\airpods_pro2.png" />
+    <Content Include="Content\Images\anker_powerbank.png" />
+    <Content Include="Content\Images\apple_watch_series9.png" />
+    <Content Include="Content\Images\iphone_15_promax.png" />
+    <Content Include="Content\Images\lenovo_ideapad.png" />
+    <Content Include="Content\Images\macbook_air_m3.png" />
+    <Content Include="Content\Images\samsung_s24_ultra.png" />
+    <Content Include="Content\Images\xiaomi_watch_s3.png" />
+    <Content Include="Content\Images\images.jpg" />
+    <Content Include="Content\Images\images (1).jpg" />
+    <Content Include="Content\Images\images (2).jpg" />
+    <Content Include="Content\Images\images (3).jpg" />
+    <Content Include="Content\Images\images (4).jpg" />
+    <Content Include="Content\Images\images (5).jpg" />
+    <Content Include="Content\Images\images (6).jpg" />
+    <Content Include="Content\Images\images (7).jpg" />
+    <Content Include="Content\Images\images (8).jpg" />
+    <Content Include="Content\Images\images (9).jpg" />
+    <Content Include="Content\Images\images (10).jpg" />
+    <Content Include="Content\Images\images (11).jpg" />
+    <Content Include="Content\Images\images (12).jpg" />
+    <Content Include="Content\Images\images (13).jpg" />
+    <Content Include="Areas\Admin\Views\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Products\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Products\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\Products\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\Products\Delete.cshtml" />
+    <Content Include="Areas\Admin\Views\Products\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\Products\PVCreateEditProduct.cshtml" />
+    <Content Include="Areas\Admin\Views\Products\PVListProduct.cshtml" />
+    <Content Include="Areas\Admin\Views\Products\PVProductInfo.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

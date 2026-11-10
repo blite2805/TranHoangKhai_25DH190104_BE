@@ -44,7 +44,7 @@ RegisterVM, LoginVM, PersonalMenuVM, HomeProductVM, ProductDetailVM, CheckoutVM 
 - `Views/Account/`: Register, Login, ProfileInfo.
 - `Views/Order/`: Checkout, OrderSuccess, MyOrder, OrderDetail.
 - `Views/Cart/`: Index (nhóm theo danh mục) + `_PVSimilarProduct.cshtml`.
-- `Views/Home/`: Index (banner `~/Content/images/banner_home.jpg`), ProductList, ProductDetail + partial `_PVFeatureProduct.cshtml`, `_PVNewProduct.cshtml`, `_PVRelatedProduct.cshtml`, `_PVTopProduct.cshtml`.
+- `Views/Home/`: Index (banner `~/Content/Images/banner_home.jpg`), ProductList, ProductDetail + partial `_PVFeatureProduct.cshtml`, `_PVNewProduct.cshtml`, `_PVRelatedProduct.cshtml`, `_PVTopProduct.cshtml`.
 - CSS riêng: `Content/myStyle/CustomerHome.css`, `CustomerDetailProduct.css` (bundle `~/Content/customerCss`).
 
 ### Điều kiện kiểm tra/validation (theo yêu cầu)
@@ -59,11 +59,44 @@ RegisterVM, LoginVM, PersonalMenuVM, HomeProductVM, ProductDetailVM, CheckoutVM 
 - `Update_Part3.sql`: chạy khi DB đã có từ phần trước (ALTER TABLE an toàn, idempotent).
 - `MyStore_CreateDB.sql`: đã bao gồm sẵn các thay đổi (ShippingAddress, DeliveryMethod, PaymentMethod, computed TotalPrice).
 
-## Công khai website (deploy)
-Môi trường Linux không build được .NET Framework — cần Visual Studio trên Windows để publish:
-1. **Azure App Service (F1 free)**: Trong VS → chuột phải project → **Publish** → Azure → Azure App Service (Linux/Windows) → tạo plan giá Free F1 → publish. Cần SQL Server public: dùng **Azure SQL Database** (có lớp Basic/Serverless rẻ hoặc dùng free trial), rồi đổi connection string trong Web.config / Application Settings của App Service.
-2. **Hosting ASP.NET miễn phí**: SmarterASP.NET hoặc Somee.com hỗ trợ .NET Framework 4.7.2 + SQL Server miễn phí (giới hạn băng thông/lưu trữ). Upload file publish (FileSystem) qua FTP + tạo SQL Server trên hosting, chạy script `MyStore_CreateDB.sql` trên DB của hosting, cập nhật connection string.
-3. Lưu ý: sau khi chạy `Update_Part3.sql` trên DB, nên **Update Model from Database** trong EDMX (double-click `MyStoreModel.edmx` → Update Model from Database) để EF đồng bộ các cột mới (DeliveryMethod/PaymentMethod/ShippingAddress/TotalPrice).
+## Công khai website (deploy) — chạy trên web KHÔNG cần Visual Studio
+Môi trường Linux không build được .NET Framework — cần máy Windows (có Visual Studio 2022) để publish, HOẶC dùng GitHub Actions (build trên máy ảo Windows của Microsoft, không cần máy của bạn). Dự án đã chuẩn bị sẵn:
+- `Properties/PublishProfiles/AzureWebApp.pubxml` — profile publish lên Azure App Service.
+- `.github/workflows/azure-deploy.yml` — workflow tự build + deploy mỗi khi push lên `main`.
+- `Web.Release.config` — tự chuyển connection string sang production khi publish bản Release.
+
+### Cách A — Deploy bằng GitHub Actions (không cần máy Windows, KHẤN NGHỊ)
+1. **Tạo Azure App Service (miễn phí F1):**
+   - Vào https://portal.azure.com → Create a resource → **Web App**.
+   - Runtime stack: **.NET Framework 4.8** (tương thích 4.7.2), Operating System: **Windows**, Region gần Việt Nam (Southeast Asia / Singapore), Pricing plan: **Free F1**.
+   - Đặt tên (vd: `kharistore`) → Create. *(Ảnh chụp: mục Create Web App trên Azure Portal)*
+2. **Tạo Azure SQL Database:**
+   - Azure Portal → Create a resource → **SQL Database**. Server: tạo mới (đặt admin login + password, region giống App Service). Compute + storage: chọn **Basic** (rẻ nhất) hoặc free trial. Cho phép Azure services truy cập server (Firewall → "Allow Azure services and resources to access this server" = Yes).
+   - Sau khi tạo xong: vào SQL Database → **Query editor** (hoặc dùng SSMS kết nối tới server) → mở file `MyStore_CreateDB.sql` → paste → Run. *(Ảnh chụp: Query editor chạy script tạo bảng)*
+3. **Khai báo connection string trong App Service (không lộ mật khẩu):**
+   - App Service → Settings → **Configuration** → Connection strings → **New connection string**:
+     - Name: `MyStoreEntities`
+     - Type: **Custom** (QUAN TRỌNG — vì EF Database-First dùng EntityClient)
+     - Value: `metadata=res://*/Models.MyStoreModel.csdl|res://*/Models.MyStoreModel.ssdl|res://*/Models.MyStoreModel.msl;provider=System.Data.SqlClient;provider connection string="data source=<TEN-SERVER>.database.windows.net;initial catalog=<TEN-DB>;user id=<ADMIN-LOGIN>;password=<ADMIN-PASSWORD>;trustservercertificate=True;MultipleActiveResultSets=True;App=EntityFramework"`
+   - Save. *(Ảnh chụp: mục Connection strings trong Configuration)*
+4. **Lấy Publish Profile:**
+   - App Service → Overview → nút **Get publish profile** → tải file `.PublishSettings` về.
+5. **Cấu hình GitHub Secrets:**
+   - Trên GitHub repo → Settings → Secrets and variables → **Actions** → New repository secret:
+     - `AZURE_WEBAPP_NAME` = tên App Service (vd: `kharistore`)
+     - `AZURE_WEBAPP_PUBLISH_PROFILE` = toàn bộ nội dung file `.PublishSettings` (mở bằng Notepad, copy hết).
+6. **Sửa tên trong profile:** mở `Properties/PublishProfiles/AzureWebApp.pubxml`, thay mọi chỗ `__TEN-WEBAPP__` bằng tên App Service (vd: `kharistore`). Commit + push.
+7. **Xem kết quả:** tab **Actions** trên GitHub → chờ workflow xanh (3–5 phút) → truy cập `https://<ten-webapp>.azurewebsites.net`.
+
+### Cách B — Publish thủ công bằng Visual Studio 2022 (Windows)
+1. Thực hiện bước 1–4 ở Cách A (tạo App Service + Azure SQL + chạy script + khai báo connection string).
+2. Mở solution trong VS → chuột phải project → **Publish** → **Import profile** → chọn file `.PublishSettings` đã tải. (Hoặc chọn profile "AzureWebApp" có sẵn, nhập password từ file .PublishSettings.)
+3. Configuration chọn **Release** → Publish. Xong, trình duyệt mở trang web công khai.
+
+### Cách C — Hosting ASP.NET miễn phí khác
+SmarterASP.NET / Somee.com hỗ trợ .NET Framework 4.7.2 + SQL Server miễn phí (giới hạn băng thông/lưu trữ): publish kiểu FileSystem, upload qua FTP, tạo SQL trên hosting, chạy `MyStore_CreateDB.sql`, cập nhật connection string trong `Web.config`.
+
+> **Lưu ý EDMX:** sau khi chạy `Update_Part3.sql` trên DB production, mở `MyStoreModel.edmx` trong VS → **Update Model from Database** để EF đồng bộ các cột mới (DeliveryMethod/PaymentMethod/ShippingAddress/TotalPrice), rồi publish lại.
 
 ## Cấu trúc dự án
 - `25DH190104_TranHoangKhai_BE/` — project web (Controllers, Models, Views, Areas/Admin)
@@ -74,4 +107,4 @@ Môi trường Linux không build được .NET Framework — cần Visual Studi
 ## Lưu ý
 - Mật khẩu lưu dạng plaintext trong bảng `User` (dự án môn học, không dùng cho production).
 - Đổi connection string trong `Web.config` (thẻ `<connectionStrings>`) nếu dùng SQL Server instance khác.
-- Thương hiệu: KHARI Store (đổi từ FASTOR). Banner trang chủ: `Content/images/banner_home.jpg`.
+- Thương hiệu: KHARI Store (đổi từ FASTOR). Banner trang chủ: `Content/Images/banner_home.jpg`.
