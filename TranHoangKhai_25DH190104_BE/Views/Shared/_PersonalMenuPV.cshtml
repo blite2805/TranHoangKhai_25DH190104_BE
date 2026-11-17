@@ -1,26 +1,30 @@
 @model TranHoangKhai_25DH190104_BE.Models.ViewModel.PersonalMenuVM
 <span style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-@if (Model.IsLoggedIn)
-{
-    <span>Xin chào, @Model.Username</span>
-    <div class="dropdown">
-        <button class="btn g">Tài khoản</button>
-        <div class="dropdown-menu">
-            <a href="@Url.Action("ProfileInfo","Account")">Thông tin tài khoản</a>
-            <a href="@Url.Action("MyOrder","Order")">Lịch sử mua hàng</a>
-            <a href="@Url.Action("Logout","Account")">Đăng xuất</a>
+    @if (Model.IsLoggedIn)
+    {
+        <span>Xin chào, @Model.Username</span>
+        <div class="dropdown">
+            <button class="btn g">Tài khoản</button>
+            <div class="dropdown-menu">
+                @if (User.IsInRole("Admin") || string.Equals(Model.Username, "admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    <a href="@Url.Action("Index", "Home", new { area = "Admin" })" style="color:#14b8a6;font-weight:700">Trang quản trị</a>
+                }
+                <a href="@Url.Action("ProfileInfo", "Account")">Thông tin tài khoản</a>
+                <a href="@Url.Action("MyOrder", "Order")">Lịch sử mua hàng</a>
+                <a href="@Url.Action("Logout", "Account")">Đăng xuất</a>
+            </div>
         </div>
-    </div>
-}
-else
-{
-    <div class="dropdown">
-        <button class="btn g">Tài khoản</button>
-        <div class="dropdown-menu">
-            <a href="@Url.Action("Register","Account")">Đăng ký</a>
-            <a href="@Url.Action("Login","Account")">Đăng nhập</a>
+    }
+    else
+    {
+        <div class="dropdown">
+            <button class="btn g">Tài khoản</button>
+            <div class="dropdown-menu">
+                <a href="@Url.Action("Register", "Account")">Đăng ký</a>
+                <a href="@Url.Action("Login", "Account")">Đăng nhập</a>
+            </div>
         </div>
-    </div>
-}
-<a class="btn" href="@Url.Action("Index","Cart")">Giỏ hàng (@Model.CartCount)</a>
+    }
+    <a class="btn" href="@Url.Action("Index", "Cart")">Giỏ hàng (@Model.CartCount)</a>
 </span>
