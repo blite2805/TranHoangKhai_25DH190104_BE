@@ -1,0 +1,5 @@
+@model TranHoangKhai_25DH190104_BE.Models.Product
+@{ ViewBag.Title = "Chi tiết sản phẩm"; }
+<div class="panel">@Html.Partial("_PVProductInfo", Model)</div>
+<a class="btn o" href="@Url.Action("Index")">Quay lại</a>
+<a class="btn o" href="@Url.Action("Edit",new{id=Model.ProductID})">Sửa</a>

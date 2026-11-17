@@ -1,0 +1,19 @@
+@model List<TranHoangKhai_25DH190104_BE.Models.Order>
+@{ ViewBag.Title = "Lịch sử mua hàng"; }
+<h2>Đơn hàng của tôi</h2>
+@using (Html.BeginForm("MyOrder", "Order", FormMethod.Get))
+{ <div class="tools"><input type="text" name="search" placeholder="Tìm theo mã đơn hoặc tên sản phẩm" value="@Request["search"]"><button type="submit" class="btn o">Tìm</button></div> }
+@if (Model.Count == 0)
+{ <div class="panel">Bạn chưa có đơn hàng nào.</div> }
+@foreach (var o in Model)
+{
+    <div class="panel">
+     <div style="display:flex;justify-content:space-between;flex-wrap:wrap">
+        <b>#@o.OrderID</b> <span class="mu">@o.OrderDate.ToString("dd/MM/yyyy")</span>
+        <span style="background:var(--or);color:#fff;border-radius:6px;padding:1px 10px;font-size:12px">@o.PaymentStatus</span>
+     </div>
+     <p class="mu">@o.PaymentMethod | @o.DeliveryMethod | Giao tới: @o.ShippingAddress</p>
+     <ul>@foreach (var d in o.OrderDetails) { <li>@d.Product?.ProductName x @d.Quantity - @((d.Quantity*d.UnitPrice).ToString("N0")) đ</li> }</ul>
+     <b>Tổng: @o.TotalAmount.ToString("N0") đ</b>
+    </div>
+}

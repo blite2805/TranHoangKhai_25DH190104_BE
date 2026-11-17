@@ -1,0 +1,8 @@
+@model TranHoangKhai_25DH190104_BE.Models.Category
+@{ ViewBag.Title = "Xóa danh mục"; }
+<div class="panel">
+ <h3>Bạn có chắc xóa danh mục này?</h3>
+ <p><b>@Model.CategoryName</b> (Mã @Model.CategoryID)</p>
+ @using (Html.BeginForm()) { @Html.AntiForgeryToken() <button type="submit" class="btn r">Xóa</button> }
+</div>
+<a class="btn o" href="@Url.Action("Index")">Quay lại</a>

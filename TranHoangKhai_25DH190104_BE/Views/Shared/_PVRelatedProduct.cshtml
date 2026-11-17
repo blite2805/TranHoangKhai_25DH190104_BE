@@ -1,0 +1,13 @@
+@model TranHoangKhai_25DH190104_BE.Models.ViewModel.ProductDetailVM
+<h4>Sản phẩm tương tự</h4>
+<div class="grid">
+@foreach (var p in Model.RelatedProducts)
+{
+    <div class="card">
+        <a href="@Url.Action("ProductDetail","Home",new { id=p.ProductID })">
+            <div class="pic" style="height:110px;font-size:40px">@if (!string.IsNullOrEmpty(p.ProductImage)) { <img src="@p.ProductImage" alt="@p.ProductName"> } else { <span>🛒</span> }</div>
+        </a>
+        <div class="in"><h3 style="font-size:13px">@p.ProductName</h3><span class="price" style="font-size:14px">@p.ProductPrice.ToString("N0") đ</span></div>
+    </div>
+}
+</div>

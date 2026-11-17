@@ -1,0 +1,24 @@
+@model TranHoangKhai_25DH190104_BE.Models.ViewModel.ProductDetailVM
+@{ ViewBag.Title = Model.Product.ProductName; }
+<div class="panel">
+ <div style="display:flex;gap:24px;flex-wrap:wrap">
+  <div class="pic" style="width:300px;height:260px;font-size:90px;border-radius:12px">
+    @if (!string.IsNullOrEmpty(Model.Product.ProductImage)) { <img src="@Model.Product.ProductImage" alt="@Model.Product.ProductName"> } else { <span>🛒</span> }
+  </div>
+  <div style="flex:1;min-width:260px">
+    <h2>@Model.Product.ProductName</h2>
+    <p class="mu">@Model.Product.Category?.CategoryName</p>
+    <p>@Model.Product.ProductDecription</p>
+    <p class="price" style="font-size:26px">@Model.Product.ProductPrice.ToString("N0") đ</p>
+    @using (Html.BeginForm("ProductDetail", "Home", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.Product.ProductID">
+        <label>Số lượng <input type="number" name="quantity" value="1" min="1" style="width:80px"></label>
+        <button type="submit" style="margin-left:10px">Thêm vào giỏ</button>
+    }
+  </div>
+ </div>
+</div>
+@Html.Partial("_PVRelatedProduct", Model)
+@Html.Partial("_PVTopProduct", Model)

@@ -1,0 +1,26 @@
+@model TranHoangKhai_25DH190104_BE.Models.ViewModel.PersonalMenuVM
+<span style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+@if (Model.IsLoggedIn)
+{
+    <span>Xin chào, @Model.Username</span>
+    <div class="dropdown">
+        <button class="btn g">Tài khoản</button>
+        <div class="dropdown-menu">
+            <a href="@Url.Action("ProfileInfo","Account")">Thông tin tài khoản</a>
+            <a href="@Url.Action("MyOrder","Order")">Lịch sử mua hàng</a>
+            <a href="@Url.Action("Logout","Account")">Đăng xuất</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="dropdown">
+        <button class="btn g">Tài khoản</button>
+        <div class="dropdown-menu">
+            <a href="@Url.Action("Register","Account")">Đăng ký</a>
+            <a href="@Url.Action("Login","Account")">Đăng nhập</a>
+        </div>
+    </div>
+}
+<a class="btn" href="@Url.Action("Index","Cart")">Giỏ hàng (@Model.CartCount)</a>
+</span>

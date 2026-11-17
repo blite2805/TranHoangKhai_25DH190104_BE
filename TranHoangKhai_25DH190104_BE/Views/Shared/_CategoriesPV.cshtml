@@ -1,0 +1,11 @@
+@model IEnumerable<TranHoangKhai_25DH190104_BE.Models.Category>
+@{
+    var cats = ViewBag.Categories as IEnumerable<TranHoangKhai_25DH190104_BE.Models.Category>
+               ?? new List<TranHoangKhai_25DH190104_BE.Models.Category>();
+    int? cur = ViewBag.CategoryID;
+}
+<a href="@Url.Action("Index","Home")" class="@(cur==null?"on":"")">Tất cả</a>
+@foreach (var c in cats)
+{
+    <a href="@Url.Action("ProductList","Home",new { id = c.CategoryID })" class="@(cur==c.CategoryID?"on":"")">@c.CategoryName</a>
+}

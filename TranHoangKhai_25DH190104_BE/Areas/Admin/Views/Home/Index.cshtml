@@ -1,0 +1,26 @@
+@{ ViewBag.Title = "Thống kê"; }
+<div class="kpis">
+ <div class="kpi">Khách hàng<b>@ViewBag.Customers</b></div>
+ <div class="kpi">Đơn hàng<b>@ViewBag.Orders</b></div>
+ <div class="kpi">Doanh thu<b>@(((decimal)ViewBag.Revenue).ToString("N0")) đ</b></div>
+ <div class="kpi">Sản phẩm<b>@ViewBag.Products</b></div>
+</div>
+<div class="panel"><b>Doanh thu 7 ngày gần nhất</b><div id="chart" style="height:260px;margin-top:10px"></div></div>
+<div class="panel"><b>Sản phẩm bán chạy</b>
+ <ol>@foreach (var t in ViewBag.Top) { <li>@t.name - @t.qty sản phẩm</li> }</ol>
+</div>
+@section scripts {
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+google.charts.load('current', { packages: ['corechart'] });
+google.charts.setOnLoadCallback(draw);
+function draw() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Ngày'); data.addColumn('number', 'Doanh thu');
+    var labels = [@Html.Raw(ViewBag.RevLabels)]; var vals = [@Html.Raw(ViewBag.RevValues)];
+    for (var i = 0; i < labels.length; i++) data.addRow([labels[i], vals[i]]);
+    new google.visualization.ColumnChart(document.getElementById('chart'))
+        .draw(data, { legend: { position: 'none' }, colors: ['#0a8f86'], hAxis: { slantedText: true } });
+}
+</script>
+}

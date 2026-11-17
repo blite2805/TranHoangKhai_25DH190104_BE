@@ -1,0 +1,5 @@
+@model TranHoangKhai_25DH190104_BE.Models.Product
+@{ ViewBag.Title = "Xóa sản phẩm"; }
+<div class="panel"><h3>Bạn có chắc xóa sản phẩm này?</h3>@Html.Partial("_PVProductInfo", Model)
+@using (Html.BeginForm()) { @Html.AntiForgeryToken() <button type="submit" class="btn r">Xóa</button> }</div>
+<a class="btn o" href="@Url.Action("Index")">Quay lại</a>

@@ -1,0 +1,9 @@
+@model TranHoangKhai_25DH190104_BE.Models.Category
+@{ ViewBag.Title = "Chi tiết danh mục"; }
+<div class="panel">
+ <p><b>Mã:</b> @Model.CategoryID</p>
+ <p><b>Tên danh mục:</b> @Model.CategoryName</p>
+ <p><b>Số sản phẩm:</b> @(Model.Products?.Count ?? 0)</p>
+</div>
+<a class="btn o" href="@Url.Action("Index")">Quay lại</a>
+<a class="btn o" href="@Url.Action("Edit",new{id=Model.CategoryID})">Sửa</a>

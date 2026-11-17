@@ -1,0 +1,74 @@
+=====================================================================
+DO AN WEB BACK-END - TranHoangKhai_25DH190104_BE
+ASP.NET MVC5 + Entity Framework 6 + SQL Server (CSDL MyStore)
+=====================================================================
+
+YEU CAU MAY: Windows 10/11 + Visual Studio 2022 (Community duoc)
+  + workload "ASP.NET and web development" (bao gom .NET Framework 4.8)
+  + SQL Server 2019/2022 Express (ServerName: .\SQLEXPRESS) hoac Developer (localhost)
+
+CAC BUOC CHAY:
+1) TAO DATABASE:
+   - Mo SQL Server Management Studio (SSMS), ket noi voi SQL Server.
+   - File > Open > chon file: Database\MyStore_CreateAndSeed.sql > Execute (F5).
+   - Script tao CSDL MyStore + 6 bang (User, Customer, Category, Product,
+     Order, OrderDetail) + sua cot theo yeu cau (DeliveryMethod, PaymentMethod,
+     ShippingAddress, TotalPrice computed) + seed du lieu mau.
+   - Admin mac dinh: admin / Admin@123
+
+2) MO PROJECT:
+   - Mo file TranHoangKhai_25DH190104_BE.sln bang Visual Studio 2022.
+   - Restore NuGet: chuot phai vao solution > "Restore NuGet Packages"
+     (hoac Tools > NuGet Package Manager > Package Manager Console > Update-Package -reinstall).
+     Cai tu dong: EntityFramework 6.4.4, Microsoft.AspNet.Mvc 5.2.9,
+     PagedList + PagedList.Mvc, jQuery, Bootstrap...
+
+3) KIEM TRA CHUOI KET NOI (Web.config):
+   <add name="MyStoreEntities" connectionString="Data Source=.\SQLEXPRESS;Initial Catalog=MyStore;Integrated Security=True" .../>
+   - Neu dung SQL Server Developer (localhost): sua Data Source=localhost
+   - Neu dung tai khoan sa: sua thanh ;User ID=sa;Password=matkhau_cua_ban
+
+4) CHAY: Bam F5 (hoac Ctrl+F5). Trinh duyet tu mo trang chu.
+   - Dang nhap Admin: admin / Admin@123 -> tu chuyen sang trang /Admin (thong ke).
+   - Khach hang: bam Dang ky de tao tai khoan.
+
+Cau truc chinh (day du theo yeu cau co giao):
+  Controllers/      Home, Account, Cart, Order (khach hang)
+  Views/            _CustomerLayout + cac view khach + PartialViews
+                    (_CategoriesPV, _PersonalMenuPV, _PVFeatureProduct,
+                     _PVNewProduct, _PVRelatedProduct, _PVTopProduct, _PVSimilarProduct)
+  Areas/Admin/      _AdminLayout + Controllers (Home thong ke Google Chart,
+                    Categories CRUD, Products CRUD+tim+sort+phantrang+upload anh,
+                    Customers xem+tim+sort+phantrang+chi tiet don hang,
+                    Admins CRUD+tim+phantrang) + Views tuong ung
+  Models/           MyStoreEntities (DbContext) + POCO 6 bang
+  Models/ViewModel/ HomeProductVM, ProductDetailVM, ProductSearchVM,
+                    PersonalMenuVM, CheckoutVM, RegisterVM, LoginVM,
+                    CartItem, Cart, CartService (Session)
+  App_Start/         RouteConfig, FilterConfig, BundleConfig
+  Content/images/    noi upload anh san pham
+
+LUU Y QUAN TRONG VE DB-FIRST (.edmx):
+  Project nay dung EF6 Code-First-to-existing-Database (POCO + DbContext
+  MyStoreEntities), chay duoc luon voi CSDL MyStore da tao.
+  Neu co yeu cau bat buoc phai co MyStoreModel.edmx (DB-First) nhu trong slide:
+    Models > Add > New Item > Data > ADO.NET Entity Data Model > ten MyStoreModel
+    > EF Designer from database > chon CSDL MyStore > Finish.
+    Sau do xoa file Models/MyStoreEntities.cs (vi EDMX se tu sinh Context + POCO).
+    Toan bo Controllers/Views khong phai sua (dung cung ten MyStoreEntities).
+
+CHUC NANG DA LAM DU (khop danh sach yeu cau):
+  Khach: Home (banner, tim kiem, sp noi bat top10, sp moi phan trang),
+    xem theo danh muc, chi tiet sp + sp tuong tu + top deal, gio hang
+    (them/sua/xoa/xoa het, nhom theo danh muc, sp tuong tu), thanh toan
+    (COD/chuyen khoan, dia chi), xac nhan don, lich su mua hang + tim,
+    dang ky/dang nhap/dang xuat (Forms Authentication), sua thong tin + doi mat khau.
+  Admin: thong ke (KPI + Google Chart doanh thu 7 ngay + top ban chay),
+    CRUD danh muc + san pham (tim kiem, khoang gia, sap xep, phan trang,
+    upload anh len Content/images), quan ly tai khoan Admin (CRUD+tim+phantrang),
+    quan ly khach hang (xem/tim/sap xep/phantrang, xem chi tiet + danh sach
+    don hang + chi tiet tung don).
+  PayPal: tuy chon, chua tich hop (da de san key trong Web.config).
+
+Neu Visual Studio bao loi khi build: chuot phai solution > Clean, sau do
+Restore NuGet Packages lai, sau do Build Solution.

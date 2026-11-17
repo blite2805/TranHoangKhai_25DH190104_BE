@@ -1,0 +1,35 @@
+@model PagedList.IPagedList<TranHoangKhai_25DH190104_BE.Models.Product>
+@using PagedList.Mvc
+@{ ViewBag.Title = "Quản lý sản phẩm"; }
+@using (Html.BeginForm("Index", "Products", FormMethod.Get))
+{
+ <div class="panel" style="display:flex;gap:10px;flex-wrap:wrap;align-items:end">
+    <label>Từ khóa <input type="text" name="keyword" value="@ViewBag.keyword"></label>
+    <label>Giá từ <input type="number" name="minPrice" value="@ViewBag.minPrice" style="width:110px"></label>
+    <label>Đến <input type="number" name="maxPrice" value="@ViewBag.maxPrice" style="width:110px"></label>
+    <label>Sắp xếp <select name="sortOrder">
+        <option value="">Tên A-Z</option>
+        <option value="name_desc" @(ViewBag.sortOrder=="name_desc"?"selected":"")>Tên Z-A</option>
+        <option value="price_asc" @(ViewBag.sortOrder=="price_asc"?"selected":"")>Giá tăng</option>
+        <option value="price_desc" @(ViewBag.sortOrder=="price_desc"?"selected":"")>Giá giảm</option>
+    </select></label>
+    <button type="submit" class="btn o">Tìm</button>
+    <a class="btn" href="@Url.Action("Create")">+ Thêm sản phẩm</a>
+ </div>
+}
+<div class="panel" style="padding:0;overflow-x:auto">
+<table>
+ <tr><th>Mã</th><th>Tên</th><th>Danh mục</th><th>Giá</th><th>Ảnh</th><th style="width:220px">Thao tác</th></tr>
+ @foreach (var p in Model)
+ {
+   <tr><td>@p.ProductID</td><td>@p.ProductName</td><td>@p.Category?.CategoryName</td><td>@p.ProductPrice.ToString("N0") đ</td>
+    <td>@if (!string.IsNullOrEmpty(p.ProductImage)) { <img src="@p.ProductImage" style="height:40px;border-radius:6px"> } else { <span>🛒</span> }</td>
+    <td>
+      <a class="btn o" href="@Url.Action("Details",new{id=p.ProductID})">Xem</a>
+      <a class="btn o" href="@Url.Action("Edit",new{id=p.ProductID})">Sửa</a>
+      <a class="btn r" href="@Url.Action("Delete",new{id=p.ProductID})">Xóa</a>
+    </td></tr>
+ }
+</table>
+</div>
+<div class="pg">@Html.PagedListPager(Model, page => Url.Action("Index", new { keyword = ViewBag.keyword, minPrice = ViewBag.minPrice, maxPrice = ViewBag.maxPrice, sortOrder = ViewBag.sortOrder, page }))</div>

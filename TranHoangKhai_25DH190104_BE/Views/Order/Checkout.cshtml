@@ -1,0 +1,26 @@
+@model TranHoangKhai_25DH190104_BE.Models.ViewModel.CheckoutVM
+@{ ViewBag.Title = "Thanh toán"; }
+<h2>Thanh toán</h2>
+@using (Html.BeginForm("Checkout", "Order", FormMethod.Post, new { @class = "f", style = "max-width:600px" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="panel">
+     <h3>Hình thức giao hàng</h3>
+     <label><input type="radio" name="DeliveryMethod" value="Giao hàng tận nơi" checked> Giao hàng tận nơi</label>
+     <label><input type="radio" name="DeliveryMethod" value="Nhận tại cửa hàng"> Nhận tại cửa hàng</label>
+    </div>
+    <div class="panel">
+     <h3>Hình thức thanh toán</h3>
+     <label><input type="radio" name="PaymentMethod" value="Thanh toán khi nhận hàng (COD)" checked> COD (nhận hàng trả tiền)</label>
+     <label><input type="radio" name="PaymentMethod" value="Chuyển khoản ngân hàng"> Chuyển khoản ngân hàng</label>
+    </div>
+    <div class="panel">
+     <h3>Giao tới</h3>
+     <label>Địa chỉ nhận hàng
+        <input id="addr" name="ShippingAddress" value="@Model.ShippingAddress" readonly style="background:#eee">
+     </label>
+     <button type="button" class="btn o" onclick="document.getElementById('addr').readOnly=false;document.getElementById('addr').style.background='#fff';document.getElementById('addr').focus()">Chỉnh sửa địa chỉ</button>
+    </div>
+    <div class="panel"><b>Tổng cộng: <span class="price">@Model.Total.ToString("N0") đ</span></b></div>
+    <button type="submit">Đặt hàng</button>
+}

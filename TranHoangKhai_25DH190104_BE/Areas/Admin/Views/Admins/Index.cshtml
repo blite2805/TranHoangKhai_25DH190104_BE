@@ -1,0 +1,27 @@
+@model PagedList.IPagedList<TranHoangKhai_25DH190104_BE.Models.User>
+@using PagedList.Mvc
+@{ ViewBag.Title = "Tài khoản Admin"; }
+@using (Html.BeginForm("Index", "Admins", FormMethod.Get))
+{
+ <div class="panel" style="display:flex;gap:10px;align-items:end">
+    <label>Tìm tài khoản <input type="text" name="keyword" value="@ViewBag.keyword"></label>
+    <button type="submit" class="btn o">Tìm</button>
+    <a class="btn" href="@Url.Action("Create")">+ Thêm Admin</a>
+ </div>
+}
+<div class="panel" style="padding:0">
+<table>
+ <tr><th>Tài khoản</th><th>Vai trò</th><th style="width:180px">Thao tác</th></tr>
+ @foreach (var u in Model)
+ {
+   <tr><td>@u.Username</td><td>Admin</td>
+    <td>
+      <a class="btn o" href="@Url.Action("Edit",new{id=u.Username})">Đổi mật khẩu</a>
+      @if (u.Username != "admin")
+      { using (Html.BeginForm("Delete", "Admins", FormMethod.Post))
+        { @Html.AntiForgeryToken() <input type="hidden" name="id" value="@u.Username"><button type="submit" class="btn r" onclick="return confirm('Xóa tài khoản này?')">Xóa</button> } }
+    </td></tr>
+ }
+</table>
+</div>
+<div class="pg">@Html.PagedListPager(Model, page => Url.Action("Index", new { keyword = ViewBag.keyword, page }))</div>

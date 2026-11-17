@@ -1,0 +1,48 @@
+@model TranHoangKhai_25DH190104_BE.Models.ViewModel.HomeProductVM
+@using PagedList.Mvc
+
+<h3>Sản phẩm mới</h3>
+<div class="grid">
+    @foreach (var p in Model.NewProducts)
+    {
+        var catName = p.Category != null ? p.Category.CategoryName : "Sản phẩm";
+        var bgCol = p.CategoryID == 1 ? "#fce7d6" : (p.CategoryID == 2 ? "#e6e0f8" : (p.CategoryID == 3 ? "#f9dede" : "#e2f3dc"));
+        <div class="card">
+            <a href="@Url.Action("ProductDetail", "Home", new { id = p.ProductID })" style="text-decoration:none">
+                <div class="pic" style="background:@bgCol">
+                    @if (!string.IsNullOrEmpty(p.ProductImage))
+                    {
+                        <img src="@p.ProductImage" alt="@p.ProductName">
+                    }
+                    else if (p.CategoryID == 1)
+                    {
+                        <svg width="64" height="64" viewBox="0 0 64 64"><rect x="18" y="8" width="28" height="48" rx="5" fill="#4f46e5"/><rect x="21" y="13" width="22" height="36" rx="2" fill="#e0e7ff"/><rect x="24" y="17" width="4" height="4" rx="1" fill="#f59e0b"/><rect x="30" y="17" width="4" height="4" rx="1" fill="#10b981"/><rect x="36" y="17" width="4" height="4" rx="1" fill="#ef4444"/><rect x="24" y="24" width="4" height="4" rx="1" fill="#3b82f6"/><rect x="30" y="24" width="4" height="4" rx="1" fill="#8b5cf6"/><rect x="36" y="24" width="4" height="4" rx="1" fill="#ec4899"/></svg>
+                    }
+                    else if (p.CategoryID == 2)
+                    {
+                        <svg width="64" height="64" viewBox="0 0 64 64"><rect x="12" y="16" width="40" height="26" rx="3" fill="#334155"/><rect x="15" y="19" width="34" height="20" fill="#bae6fd"/><path d="M8 43h48l-3 5H11l-3-5z" fill="#64748b"/></svg>
+                    }
+                    else if (p.CategoryID == 3)
+                    {
+                        <svg width="64" height="64" viewBox="0 0 64 64"><path d="M18 34v-4a14 14 0 0 1 28 0v4" fill="none" stroke="#94a3b8" stroke-width="4" stroke-linecap="round"/><rect x="14" y="32" width="8" height="16" rx="4" fill="#cbd5e1"/><rect x="42" y="32" width="8" height="16" rx="4" fill="#cbd5e1"/></svg>
+                    }
+                    else
+                    {
+                        <svg width="64" height="64" viewBox="0 0 64 64"><rect x="22" y="14" width="20" height="38" rx="4" fill="#84cc16"/><rect x="28" y="10" width="8" height="4" rx="1" fill="#65a30d"/><rect x="25" y="18" width="14" height="28" rx="2" fill="#bef264"/><circle cx="32" cy="26" r="2.5" fill="#fff"/></svg>
+                    }
+                </div>
+            </a>
+            <div class="in">
+                <h3>@p.ProductName</h3>
+                <span class="mu">@catName</span>
+                <span class="price">@p.ProductPrice.ToString("N0") đ</span>
+                @using (Html.BeginForm("AddItem", "Cart", FormMethod.Post))
+                {
+                    <input type="hidden" name="id" value="@p.ProductID">
+                    <button type="submit">Thêm vào giỏ</button>
+                }
+            </div>
+        </div>
+    }
+</div>
+<div class="pg">@Html.PagedListPager(Model.NewProducts, page => Url.Action("Index", new { searchTerm = Model.SearchTerm, page }))</div>

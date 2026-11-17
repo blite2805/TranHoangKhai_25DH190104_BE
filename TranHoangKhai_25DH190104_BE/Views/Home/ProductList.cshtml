@@ -1,0 +1,26 @@
+@model PagedList.IPagedList<TranHoangKhai_25DH190104_BE.Models.Product>
+@using PagedList.Mvc
+@{ ViewBag.Title = "Sản phẩm theo danh mục"; }
+<div class="tools"><b>@Model.TotalItemCount sản phẩm</b></div>
+@if (Model.Any())
+{
+    <div class="grid">
+    @foreach (var p in Model)
+    {
+        <div class="card">
+            <a href="@Url.Action("ProductDetail","Home",new { id=p.ProductID })">
+                <div class="pic">@if (!string.IsNullOrEmpty(p.ProductImage)) { <img src="@p.ProductImage" alt="@p.ProductName"> } else { <span>🛒</span> }</div>
+            </a>
+            <div class="in">
+                <h3>@p.ProductName</h3>
+                <span class="mu">@p.Category?.CategoryName</span>
+                <span class="price">@p.ProductPrice.ToString("N0") đ</span>
+                @using (Html.BeginForm("AddItem", "Cart", FormMethod.Post))
+                { <input type="hidden" name="id" value="@p.ProductID"><button type="submit">Thêm vào giỏ</button> }
+            </div>
+        </div>
+    }
+    </div>
+    <div class="pg">@Html.PagedListPager(Model, page => Url.Action("ProductList", new { id = ViewBag.CategoryID, searchTerm = ViewBag.SearchTerm, page }))</div>
+}
+else { <div class="panel">Không tìm thấy sản phẩm.</div> }

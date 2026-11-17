@@ -1,0 +1,19 @@
+@model TranHoangKhai_25DH190104_BE.Models.Order
+@{ ViewBag.Title = "Xác nhận đơn hàng"; }
+<div class="panel" style="background:#0a8f8622">
+ <h2>Đặt hàng thành công!</h2>
+ <p>Mã đơn: <b>#@Model.OrderID</b> - Ngày đặt: @Model.OrderDate.ToString("dd/MM/yyyy")</p>
+ <p>Tổng: <b class="price">@Model.TotalAmount.ToString("N0") đ</b> - Trạng thái: @Model.PaymentStatus</p>
+ <p>Thanh toán: @Model.PaymentMethod | Giao hàng: @Model.DeliveryMethod</p>
+ <p>Giao tới: @Model.ShippingAddress</p>
+</div>
+<div class="panel">
+ <h3>Chi tiết đơn hàng</h3>
+ <table>
+  <tr><th>Sản phẩm</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th></tr>
+  @foreach (var d in Model.OrderDetails)
+  { <tr><td>@d.Product?.ProductName</td><td>@d.Quantity</td><td>@d.UnitPrice.ToString("N0") đ</td><td>@((d.Quantity*d.UnitPrice).ToString("N0")) đ</td></tr> }
+ </table>
+</div>
+<a class="btn" href="@Url.Action("Index","Home")">Tiếp tục mua sắm</a>
+<a class="btn o" href="@Url.Action("MyOrder","Order")">Xem đơn của tôi</a>

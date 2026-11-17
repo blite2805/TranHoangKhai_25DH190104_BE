@@ -1,0 +1,336 @@
+@{
+    var pm = new PersonalMenuVM {
+        IsLoggedIn = Request.IsAuthenticated,
+        Username = User.Identity.Name,
+        CartCount = CartService.GetCart().Count
+    };
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title - KHARI STORE</title>
+    <style>
+        :root {
+            --ink: #f1f5f9;
+            --teal: #14b8a6;
+            --teal-dark: #0d9488;
+            --or: #ff6b35;
+            --bg: #0b1120;
+            --card: #151e2e;
+            --ln: #233044;
+            --mu: #94a3b8;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font: 15px/1.5 "Segoe UI", system-ui, Arial, sans-serif;
+        }
+        header {
+            background: #0b1120;
+            border-bottom: 1px solid var(--ln);
+            color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+        .bar {
+            max-width: 1120px;
+            margin: auto;
+            padding: 12px 16px;
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .logo {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            color: #fff;
+            text-decoration: none;
+        }
+        .logo b {
+            font-size: 17px;
+            font-weight: 800;
+            letter-spacing: .5px;
+            display: block;
+            line-height: 1.1;
+        }
+        .logo small {
+            font-size: 10px;
+            color: var(--mu);
+            letter-spacing: 2px;
+        }
+        .bar form {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+        }
+        .bar input[type=search] {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--ln);
+            background: #151e2e;
+            color: var(--ink);
+            font: inherit;
+        }
+        .bar input[type=search]::placeholder { color: var(--mu); }
+        button, .btn {
+            font: inherit;
+            cursor: pointer;
+            border: 0;
+            border-radius: 10px;
+            padding: 9px 14px;
+            background: var(--teal);
+            color: #fff;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            transition: background .15s;
+        }
+        button:hover, .btn:hover { background: var(--teal-dark); }
+        .btn.g {
+            background: #151e2e;
+            border: 1px solid var(--ln);
+            color: var(--ink);
+        }
+        .btn.g:hover { border-color: var(--teal); }
+        .btn.o {
+            background: #1e293b;
+            color: var(--ink);
+            border: 1px solid var(--ln);
+        }
+        .btn.r { background: #e11d48; color: #fff; }
+        nav {
+            max-width: 1120px;
+            margin: auto;
+            padding: 0 16px 10px;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+        }
+        nav a {
+            background: transparent;
+            color: #cbd5e1;
+            font-weight: 500;
+            border-radius: 999px;
+            padding: 6px 14px;
+            white-space: nowrap;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        nav a:hover { color: #fff; background: #1e293b; }
+        nav a.on {
+            background: #fff;
+            color: #0b1120;
+            font-weight: 700;
+        }
+        main {
+            max-width: 1120px;
+            margin: auto;
+            padding: 18px 16px 60px;
+        }
+        .hero {
+            background: linear-gradient(120deg, #0d9488 0%, #132a3a 65%, #16203a 100%);
+            border: 1px solid #1f3b4d;
+            color: #fff;
+            border-radius: 18px;
+            padding: 32px 28px;
+            margin-bottom: 22px;
+        }
+        .hero h1 { margin: 0 0 8px; font-size: 28px; font-weight: 800; }
+        .hero div { color: #e2e8f0; font-size: 15px; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+        }
+        .card {
+            background: var(--card);
+            border: 1px solid var(--ln);
+            border-radius: 14px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform .15s, border-color .15s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: #334155;
+        }
+        .pic {
+            height: 155px;
+            display: grid;
+            place-items: center;
+            font-size: 56px;
+            background: #dce6f9;
+            position: relative;
+            overflow: hidden;
+        }
+        .pic img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .in {
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+        .in h3 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+        .in form { margin-top: auto; padding-top: 6px; }
+        .in form button { width: 100%; }
+        .price {
+            color: var(--or);
+            font-weight: 800;
+            font-size: 17px;
+        }
+        .mu {
+            color: var(--mu);
+            font-size: 13px;
+        }
+        .tools {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 6px 0 14px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        select, input, textarea {
+            font: inherit;
+            padding: 9px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--ln);
+            background: #151e2e;
+            color: var(--ink);
+        }
+        .pg {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+        .pg ul {
+            list-style: none;
+            display: flex;
+            gap: 6px;
+            padding: 0;
+            margin: 0;
+        }
+        .pg a, .pg span {
+            background: var(--card);
+            color: var(--ink);
+            border: 1px solid var(--ln);
+            border-radius: 8px;
+            padding: 6px 12px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .pg .active a, .pg .active span, .pg a.active {
+            background: var(--teal);
+            color: #fff;
+            border-color: var(--teal);
+        }
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--ln);
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 16px;
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th, td {
+            text-align: left;
+            padding: 10px 8px;
+            border-bottom: 1px solid var(--ln);
+            vertical-align: top;
+        }
+        th { color: var(--mu); font-weight: 600; }
+        .f { display: grid; gap: 12px; max-width: 460px; }
+        .f label { font-size: 13px; color: var(--mu); display: grid; gap: 4px; }
+        .f input, .f select, .f textarea { width: 100%; }
+        .err { color: #fb7185; font-size: 13px; }
+        footer {
+            background: #080d19;
+            border-top: 1px solid var(--ln);
+            color: var(--mu);
+            text-align: center;
+            padding: 20px;
+            font-size: 13px;
+        }
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            background: var(--card);
+            color: var(--ink);
+            border: 1px solid var(--ln);
+            border-radius: 10px;
+            min-width: 190px;
+            box-shadow: 0 10px 25px #0008;
+            z-index: 30;
+            overflow: hidden;
+        }
+        .dropdown:hover .dropdown-menu { display: block; }
+        .dropdown-menu a {
+            display: block;
+            padding: 10px 14px;
+            color: var(--ink);
+            text-decoration: none;
+        }
+        .dropdown-menu a:hover { background: #1e293b; }
+        h2, h3 { margin-top: 0; color: #f8fafc; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="bar">
+            <a class="logo" href="@Url.Action("Index","Home")">
+                <svg width="40" height="40" viewBox="0 0 44 44">
+                    <rect width="44" height="44" rx="12" fill="#14b8a6" />
+                    <rect x="12" y="6" width="20" height="32" rx="4" fill="none" stroke="#fff" stroke-width="2.4" />
+                    <path d="M17 13v18M17 22l9-9M18.5 21l8 10" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" />
+                </svg>
+                <span><b>KHARI STORE</b><small>PHONE &amp; TECH</small></span>
+            </a>
+            @using (Html.BeginForm("Index", "Home", FormMethod.Get))
+            {
+                <input type="search" name="searchTerm" placeholder="Tìm điện thoại, laptop, tai nghe..." value="@ViewBag.SearchTerm">
+            }
+            @Html.Partial("_PersonalMenuPV", pm)
+        </div>
+        @{
+            var cats = ViewBag.Categories as System.Collections.Generic.IEnumerable<TranHoangKhai_25DH190104_BE.Models.Category>;
+            if (cats == null)
+            {
+                using (var dbCat = new TranHoangKhai_25DH190104_BE.Models.MyStoreEntities())
+                {
+                    cats = new System.Collections.Generic.List<TranHoangKhai_25DH190104_BE.Models.Category>(dbCat.Categories);
+                }
+            }
+        }
+        <nav>@Html.Partial("_CategoriesPV", cats)</nav>
+    </header>
+    <main>@RenderBody()</main>
+    <footer>KHARI STORE - Đồ án Web Back-End - TranHoangKhai_25DH190104_BE - ASP.NET MVC5 + Entity Framework + SQL Server</footer>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

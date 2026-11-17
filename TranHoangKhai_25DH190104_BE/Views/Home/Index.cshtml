@@ -1,0 +1,9 @@
+@model TranHoangKhai_25DH190104_BE.Models.ViewModel.HomeProductVM
+@{ ViewBag.Title = "Trang chủ"; }
+<section class="hero">
+ <h1>Công nghệ chính hãng, giá tốt mỗi ngày</h1>
+ <div>Điện thoại, laptop, âm thanh và phụ kiện - giao hàng toàn quốc.</div>
+</section>
+@Html.Partial("_PVFeatureProduct", Model)
+<hr style="border:0;border-top:1px solid var(--ln);margin:24px 0">
+@Html.Partial("_PVNewProduct", Model)

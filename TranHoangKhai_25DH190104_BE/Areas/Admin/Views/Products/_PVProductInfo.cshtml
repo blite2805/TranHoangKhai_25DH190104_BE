@@ -1,0 +1,7 @@
+@model TranHoangKhai_25DH190104_BE.Models.Product
+<p><b>Mã:</b> @Model.ProductID</p>
+<p><b>Tên:</b> @Model.ProductName</p>
+<p><b>Danh mục:</b> @Model.Category?.CategoryName</p>
+<p><b>Giá:</b> @Model.ProductPrice.ToString("N0") đ</p>
+<p><b>Mô tả:</b> @Model.ProductDecription</p>
+@if (!string.IsNullOrEmpty(Model.ProductImage)) { <p><img src="@Model.ProductImage" style="max-height:160px;border-radius:8px"></p> }

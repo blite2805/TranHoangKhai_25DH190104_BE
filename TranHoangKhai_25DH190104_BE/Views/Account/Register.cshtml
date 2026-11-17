@@ -1,0 +1,19 @@
+@model TranHoangKhai_25DH190104_BE.Models.ViewModel.RegisterVM
+@{ ViewBag.Title = "Đăng ký"; }
+<div class="panel" style="max-width:520px;margin:auto">
+ <h2>Đăng ký tài khoản</h2>
+ @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "f" }))
+ {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "err" })
+    <label>Họ và tên * @Html.TextBoxFor(m => m.CustomerName) @Html.ValidationMessageFor(m => m.CustomerName, "", new { @class = "err" })</label>
+    <label>Số điện thoại * @Html.TextBoxFor(m => m.CustomerPhone) @Html.ValidationMessageFor(m => m.CustomerPhone, "", new { @class = "err" })</label>
+    <label>Email @Html.TextBoxFor(m => m.CustomerEmail) @Html.ValidationMessageFor(m => m.CustomerEmail, "", new { @class = "err" })</label>
+    <label>Địa chỉ @Html.TextBoxFor(m => m.CustomerAddress)</label>
+    <label>Tên đăng nhập * @Html.TextBoxFor(m => m.Username) @Html.ValidationMessageFor(m => m.Username, "", new { @class = "err" })</label>
+    <label>Mật khẩu * @Html.PasswordFor(m => m.Password) @Html.ValidationMessageFor(m => m.Password, "", new { @class = "err" })</label>
+    <label>Nhập lại mật khẩu * @Html.PasswordFor(m => m.ConfirmPassword) @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "err" })</label>
+    <button type="submit">Đăng ký</button>
+    <a href="@Url.Action("Login","Account")" style="color:var(--teal)">Đã có tài khoản? Đăng nhập</a>
+ }
+</div>

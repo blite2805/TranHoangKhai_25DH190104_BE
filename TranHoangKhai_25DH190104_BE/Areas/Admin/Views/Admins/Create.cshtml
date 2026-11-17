@@ -1,0 +1,15 @@
+@{ ViewBag.Title = "Thêm tài khoản Admin"; }
+<div class="panel">
+ <h3>Thêm tài khoản Admin mới</h3>
+ @Html.ValidationSummary("", new { @class = "err" })
+ @using (Html.BeginForm())
+ {
+    @Html.AntiForgeryToken()
+    <div class="f">
+        <label>Tên đăng nhập * <input name="Username"></label>
+        <label>Mật khẩu * (từ 6 ký tự) <input type="password" name="Password"></label>
+        <button type="submit" class="btn">Tạo tài khoản</button>
+    </div>
+ }
+</div>
+<a class="btn o" href="@Url.Action("Index")">Quay lại</a>

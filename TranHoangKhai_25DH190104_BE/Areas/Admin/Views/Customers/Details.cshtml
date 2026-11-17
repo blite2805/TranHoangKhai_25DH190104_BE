@@ -1,0 +1,26 @@
+@model TranHoangKhai_25DH190104_BE.Models.Customer
+@{ ViewBag.Title = "Chi tiết khách hàng"; }
+<div class="panel">
+ <h3>Thông tin khách hàng</h3>
+ <p><b>Họ tên:</b> @Model.CustomerName | <b>SĐT:</b> @Model.CustomerPhone | <b>Email:</b> @Model.CustomerEmail</p>
+ <p><b>Tài khoản:</b> @Model.Username | <b>Địa chỉ:</b> @Model.CustomerAddress</p>
+</div>
+<h3>Đơn hàng của khách (@(Model.Orders?.Count ?? 0))</h3>
+@if (Model.Orders == null || !Model.Orders.Any()) { <div class="panel">Chưa có đơn hàng.</div> }
+@foreach (var o in Model.Orders.OrderByDescending(x => x.OrderDate))
+{
+    <div class="panel">
+     <div style="display:flex;justify-content:space-between;flex-wrap:wrap">
+        <b>#@o.OrderID</b> <span class="mu">@o.OrderDate.ToString("dd/MM/yyyy")</span>
+        <span style="background:#e8590c;color:#fff;border-radius:6px;padding:1px 10px;font-size:12px">@o.PaymentStatus</span>
+     </div>
+     <p class="mu">@o.PaymentMethod | @o.DeliveryMethod | Giao tới: @o.ShippingAddress</p>
+     <table>
+      <tr><th>Sản phẩm</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th></tr>
+      @foreach (var d in o.OrderDetails)
+      { <tr><td>@d.Product?.ProductName</td><td>@d.Quantity</td><td>@d.UnitPrice.ToString("N0") đ</td><td>@((d.Quantity*d.UnitPrice).ToString("N0")) đ</td></tr> }
+     </table>
+     <p><b>Tổng đơn:</b> <span style="color:#e8590c;font-weight:800">@o.TotalAmount.ToString("N0") đ</span></p>
+    </div>
+}
+<a class="btn o" href="@Url.Action("Index")">Quay lại</a>

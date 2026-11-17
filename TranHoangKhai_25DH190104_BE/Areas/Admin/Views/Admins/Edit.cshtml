@@ -1,0 +1,15 @@
+@model TranHoangKhai_25DH190104_BE.Models.User
+@{ ViewBag.Title = "Đổi mật khẩu Admin"; }
+<div class="panel">
+ <h3>Đổi mật khẩu: @Model.Username</h3>
+ @using (Html.BeginForm())
+ {
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Username" value="@Model.Username">
+    <div class="f">
+        <label>Mật khẩu mới * (từ 6 ký tự) <input type="password" name="Password"></label>
+        <button type="submit" class="btn">Cập nhật</button>
+    </div>
+ }
+</div>
+<a class="btn o" href="@Url.Action("Index")">Quay lại</a>

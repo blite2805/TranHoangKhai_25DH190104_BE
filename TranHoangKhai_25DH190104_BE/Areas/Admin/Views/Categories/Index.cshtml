@@ -1,0 +1,17 @@
+@model IEnumerable<TranHoangKhai_25DH190104_BE.Models.Category>
+@{ ViewBag.Title = "Quản lý danh mục"; }
+<p><a class="btn" href="@Url.Action("Create")">+ Thêm danh mục</a></p>
+<div class="panel" style="padding:0">
+<table>
+ <tr><th>Mã</th><th>Tên danh mục</th><th style="width:220px">Thao tác</th></tr>
+ @foreach (var c in Model)
+ {
+   <tr><td>@c.CategoryID</td><td>@c.CategoryName</td>
+    <td>
+      <a class="btn o" href="@Url.Action("Details",new{id=c.CategoryID})">Xem</a>
+      <a class="btn o" href="@Url.Action("Edit",new{id=c.CategoryID})">Sửa</a>
+      <a class="btn r" href="@Url.Action("Delete",new{id=c.CategoryID})">Xóa</a>
+    </td></tr>
+ }
+</table>
+</div>

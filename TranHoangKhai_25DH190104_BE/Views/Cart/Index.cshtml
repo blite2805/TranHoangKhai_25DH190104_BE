@@ -1,0 +1,41 @@
+@model TranHoangKhai_25DH190104_BE.Models.ViewModel.Cart
+@{ ViewBag.Title = "Giỏ hàng"; }
+<h2>Giỏ hàng</h2>
+@if (Model.Items.Count == 0)
+{
+    <div class="panel">Giỏ hàng đang trống. <a href="@Url.Action("Index","Home")">Tiếp tục mua sắm</a></div>
+}
+else
+{
+    foreach (var grp in Model.GroupedItems)
+    {
+        <h3>@grp.Key</h3>
+        <div class="panel">
+        <table>
+         <tr><th>Sản phẩm</th><th>Đơn giá</th><th>Số lượng</th><th>Thành tiền</th><th></th></tr>
+         @foreach (var it in grp)
+         {
+            <tr>
+             <td>@it.ProductName</td>
+             <td>@it.UnitPrice.ToString("N0") đ</td>
+             <td>
+                @using (Html.BeginForm("UpdateQuantity", "Cart", FormMethod.Post))
+                { <input type="hidden" name="id" value="@it.ProductID"><input type="number" name="quantity" value="@it.Quantity" min="1" style="width:70px"><button class="btn o" type="submit">Cập nhật</button> }
+             </td>
+             <td>@it.Total.ToString("N0") đ</td>
+             <td>@using (Html.BeginForm("RemoveItem", "Cart", FormMethod.Post)) { <input type="hidden" name="id" value="@it.ProductID"><button class="btn r" type="submit">Xóa</button> }</td>
+            </tr>
+         }
+        </table>
+        </div>
+    }
+    <div class="panel" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+        <b>Tạm tính: <span class="price">@Model.Total.ToString("N0") đ</span></b>
+        <span>
+            @using (Html.BeginForm("ClearCart", "Cart", FormMethod.Post)) { <button class="btn o" type="submit">Xóa giỏ</button> }
+            <a class="btn" href="@Url.Action("Index","Home")">Tiếp tục mua</a>
+            <a class="btn" href="@Url.Action("Checkout","Order")">Thanh toán</a>
+        </span>
+    </div>
+    @Html.Partial("_PVSimilarProduct", Model)
+}
