@@ -3,26 +3,46 @@
 @{ ViewBag.Title = "Quản lý khách hàng"; }
 @using (Html.BeginForm("Index", "Customers", FormMethod.Get))
 {
- <div class="panel" style="display:flex;gap:10px;flex-wrap:wrap;align-items:end">
-    <label>Tìm (tên/SĐT/tài khoản) <input type="text" name="keyword" value="@ViewBag.keyword"></label>
-    <label>Sắp xếp <select name="sortOrder">
-        <option value="">Tên A-Z</option>
-        <option value="name_desc" @(ViewBag.sortOrder=="name_desc"?"selected":"")>Tên Z-A</option>
-        <option value="spend" @(ViewBag.sortOrder=="spend"?"selected":"")>Chi tiêu cao</option>
-    </select></label>
-    <button type="submit" class="btn o">Tìm</button>
- </div>
+    <div class="panel" style="display:flex;gap:10px;flex-wrap:wrap;align-items:end">
+        <label>Tìm (tên/SĐT/tài khoản) <input type="text" name="keyword" value="@ViewBag.keyword"></label>
+        <label>
+            Sắp xếp
+            <select name="sortOrder">
+                <option value="">Tên A-Z</option>
+                <option value="name_desc" @(ViewBag.sortOrder == "name_desc" ? "selected" : "")>Tên Z-A</option>
+                <option value="spend" @(ViewBag.sortOrder == "spend" ? "selected" : "")>Chi tiêu cao</option>
+            </select>
+        </label>
+        <button type="submit" class="btn o">Tìm</button>
+    </div>
 }
 <div class="panel" style="padding:0;overflow-x:auto">
-<table>
- <tr><th>Mã</th><th>Họ tên</th><th>SĐT</th><th>Email</th><th>Tài khoản</th><th>Số đơn</th><th>Tổng chi</th><th></th></tr>
- @foreach (var c in Model)
- {
-   var total = c.Orders?.Sum(o => (decimal?)o.TotalAmount) ?? 0;
-   <tr><td>@c.CustomerID</td><td>@c.CustomerName</td><td>@c.CustomerPhone</td><td>@c.CustomerEmail</td><td>@c.Username</td>
-    <td>@(c.Orders?.Count ?? 0)</td><td>@total.ToString("N0") đ</td>
-    <td><a class="btn o" href="@Url.Action("Details",new{id=c.CustomerID})">Đơn hàng</a></td></tr>
- }
-</table>
+    <table>
+        <tr>
+            <th>Mã</th>
+            <th>Họ tên</th>
+            <th>SĐT</th>
+            <th>Email</th>
+            <th>Tài khoản</th>
+            <th>Số đơn</th>
+            <th>Tổng chi</th>
+            <th></th>
+        </tr>
+        @foreach (var c in Model)
+        {
+            var orderCount = c.Orders != null ? c.Orders.Count : 0;
+            decimal total = c.Orders != null ? (c.Orders.Sum(o => (decimal?)o.TotalAmount) ?? 0m) : 0m;
+            <tr>
+                <td>@c.CustomerID</td>
+                <td>@c.CustomerName</td>
+                <td>@c.CustomerPhone</td>
+                <td>@c.CustomerEmail</td>
+                <td>@c.Username</td>
+                <td>@orderCount</td>
+                <td>@total.ToString("N0") đ</td>
+                <td><a class="btn o" href="@Url.Action("Details", new { id = c.CustomerID })">Đơn hàng</a></td>
+            </tr>
+        }
+    </table>
 </div>
 <div class="pg">@Html.PagedListPager(Model, page => Url.Action("Index", new { keyword = ViewBag.keyword, sortOrder = ViewBag.sortOrder, page }))</div>
