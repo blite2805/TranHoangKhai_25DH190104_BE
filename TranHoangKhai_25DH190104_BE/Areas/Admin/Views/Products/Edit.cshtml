@@ -1,4 +1,9 @@
 @model TranHoangKhai_25DH190104_BE.Models.Product
-@{ ViewBag.Title = "Sửa sản phẩm"; }
-<div class="panel"><h3>Sửa sản phẩm</h3>@Html.Partial("_PVCreateEditProduct", Model)</div>
+@{
+    ViewBag.Title = "Sửa sản phẩm";
+}
+<div class="panel">
+    <h3>Sửa sản phẩm</h3>
+    @Html.Partial("_PVCreateEditProduct", Model)
+</div>
 <a class="btn o" href="@Url.Action("Index")">Quay lại</a>

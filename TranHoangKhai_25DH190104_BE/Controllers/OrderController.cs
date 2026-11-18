@@ -79,10 +79,62 @@ namespace TranHoangKhai_25DH190104_BE.Controllers
         {
             var customer = db.Customers.SingleOrDefault(x => x.Username == User.Identity.Name);
             if (customer == null) return RedirectToAction("Login", "Account");
-            var orders = db.Orders.Include("OrderDetails.Product").Where(o => o.CustomerID == customer.CustomerID).OrderByDescending(o => o.OrderDate).AsQueryable();
+            var orders = db.Orders.Include("OrderDetails.Product.Category")
+                .Where(o => o.CustomerID == customer.CustomerID)
+                .OrderByDescending(o => o.OrderDate)
+                .AsQueryable();
             if (!string.IsNullOrEmpty(search))
                 orders = orders.Where(o => o.OrderID.ToString() == search || o.OrderDetails.Any(d => d.Product.ProductName.Contains(search)));
             return View(orders.ToList());
+        }
+
+        // Mua lai don hang: them san pham vao gio hang voi so luong = 1
+        public ActionResult Reorder(int? id)
+        {
+            if (id == null) return RedirectToAction("MyOrder");
+            var customer = db.Customers.SingleOrDefault(x => x.Username == User.Identity.Name);
+            if (customer == null) return RedirectToAction("Login", "Account");
+
+            var order = db.Orders.Include("OrderDetails.Product")
+                .SingleOrDefault(o => o.OrderID == id && o.CustomerID == customer.CustomerID);
+            if (order == null) return RedirectToAction("MyOrder");
+
+            foreach (var d in order.OrderDetails)
+            {
+                if (d.Product != null)
+                {
+                    CartService.AddItem(d.Product, 1);
+                }
+            }
+
+            return RedirectToAction("Index", "Cart");
+        }
+
+        // Huy don hang (chi cho phep huy khi don dang Cho thanh toan / Dang xu ly)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CancelOrder(int id)
+        {
+            var customer = db.Customers.SingleOrDefault(x => x.Username == User.Identity.Name);
+            if (customer == null) return RedirectToAction("Login", "Account");
+
+            var order = db.Orders.SingleOrDefault(o => o.OrderID == id && o.CustomerID == customer.CustomerID);
+            if (order != null)
+            {
+                var st = (order.PaymentStatus ?? "").ToLower();
+                bool cannotCancel = st.Contains("huỷ") || st.Contains("hủy") || st.Contains("cancel")
+                                 || st.Contains("vận chuyển") || st.Contains("đang giao") || st.Contains("ship")
+                                 || st.Contains("đã giao") || st.Contains("deliver") || st.Contains("complete");
+
+                if (!cannotCancel)
+                {
+                    order.PaymentStatus = "Đã huỷ";
+                    db.SaveChanges();
+                    TempData["OrderMsg"] = "Đã hủy đơn hàng #" + order.OrderID + " thành công.";
+                }
+            }
+
+            return RedirectToAction("MyOrder");
         }
 
         protected override void Dispose(bool disposing)

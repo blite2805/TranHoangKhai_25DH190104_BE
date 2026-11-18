@@ -1,19 +1,311 @@
-@model List<TranHoangKhai_25DH190104_BE.Models.Order>
-@{ ViewBag.Title = "Lịch sử mua hàng"; }
-<h2>Đơn hàng của tôi</h2>
-@using (Html.BeginForm("MyOrder", "Order", FormMethod.Get))
-{ <div class="tools"><input type="text" name="search" placeholder="Tìm theo mã đơn hoặc tên sản phẩm" value="@Request["search"]"><button type="submit" class="btn o">Tìm</button></div> }
-@if (Model.Count == 0)
-{ <div class="panel">Bạn chưa có đơn hàng nào.</div> }
-@foreach (var o in Model)
-{
-    <div class="panel">
-     <div style="display:flex;justify-content:space-between;flex-wrap:wrap">
-        <b>#@o.OrderID</b> <span class="mu">@o.OrderDate.ToString("dd/MM/yyyy")</span>
-        <span style="background:var(--or);color:#fff;border-radius:6px;padding:1px 10px;font-size:12px">@o.PaymentStatus</span>
-     </div>
-     <p class="mu">@o.PaymentMethod | @o.DeliveryMethod | Giao tới: @o.ShippingAddress</p>
-     <ul>@foreach (var d in o.OrderDetails) { <li>@d.Product?.ProductName x @d.Quantity - @((d.Quantity*d.UnitPrice).ToString("N0")) đ</li> }</ul>
-     <b>Tổng: @o.TotalAmount.ToString("N0") đ</b>
-    </div>
+@model IEnumerable<TranHoangKhai_25DH190104_BE.Models.Order>
+@using System.Linq
+@using System.Collections.Generic
+@{
+    ViewBag.Title = "Đơn hàng của tôi";
+    var allOrders = Model != null
+        ? Model.OrderByDescending(x => x.OrderDate).ToList()
+        : new List<TranHoangKhai_25DH190104_BE.Models.Order>();
+
+    var statusKeys = new string[] { "pending", "processing", "shipping", "delivered", "cancelled" };
+    var statusTitles = new string[] { "Chờ thanh toán", "Đang xử lý", "Đang vận chuyển", "Đã giao", "Đã huỷ" };
+    var statusColors = new string[] { "st-pending", "st-processing", "st-shipping", "st-delivered", "st-cancelled" };
 }
+
+<style>
+    .od-wrap { max-width: 1050px; margin: 24px auto; padding: 0 14px; color: #f1f5f9; }
+    .od-title { font-size: 22px; font-weight: 700; margin-bottom: 16px; }
+    .od-alert { background: rgba(20, 184, 166, 0.14); border: 1px solid #14b8a6; color: #5eead4; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; font-weight: 500; }
+    .od-tabs { display: flex; background: #131c31; border-radius: 10px 10px 0 0; border: 1px solid #243049; overflow-x: auto; }
+    .od-tab { flex: 1; min-width: 130px; text-align: center; padding: 14px 10px; cursor: pointer; font-size: 14px; font-weight: 500; color: #94a3b8; border-bottom: 2px solid transparent; transition: .2s; white-space: nowrap; }
+    .od-tab:hover { color: #e2e8f0; }
+    .od-tab.active { color: #14b8a6; border-bottom-color: #14b8a6; font-weight: 700; background: rgba(20, 184, 166, 0.06); }
+    .od-search { display: flex; align-items: center; background: #131c31; border: 1px solid #243049; border-top: none; border-radius: 0 0 10px 10px; padding: 8px 14px; margin-bottom: 18px; }
+    .od-search svg { color: #64748b; flex-shrink: 0; margin-right: 10px; }
+    .od-search input { flex: 1; background: transparent; border: none; outline: none; color: #f1f5f9; font-size: 14px; }
+    .od-search button { background: transparent; border: none; border-left: 1px solid #2a3954; color: #14b8a6; font-weight: 600; font-size: 14px; padding: 4px 8px 4px 14px; cursor: pointer; }
+    .od-group { margin-bottom: 24px; }
+    .od-group-title { font-size: 15px; font-weight: 700; margin-bottom: 10px; padding-left: 10px; border-left: 3px solid #14b8a6; display: flex; align-items: center; gap: 8px; }
+    .od-card { background: #131c31; border: 1px solid #243049; border-radius: 10px; padding: 16px 20px; margin-bottom: 14px; }
+    .od-head { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #243049; font-size: 14px; flex-wrap: wrap; gap: 8px; }
+    .od-status { display: flex; align-items: center; gap: 7px; font-weight: 600; }
+    .st-pending { color: #f59e0b; }
+    .st-processing { color: #38bdf8; }
+    .st-shipping { color: #818cf8; }
+    .st-delivered { color: #14b8a6; }
+    .st-cancelled { color: #f87171; }
+    .od-item { display: flex; align-items: flex-start; gap: 14px; padding: 14px 0; border-bottom: 1px solid #1e293b; }
+    .od-thumb { position: relative; width: 72px; height: 72px; border-radius: 8px; border: 1px solid #2a3954; background: #0f172a; flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    .od-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .od-qty { position: absolute; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.88); color: #cbd5e1; font-size: 11px; font-weight: 700; padding: 2px 6px; border-top-left-radius: 6px; }
+    .od-info { flex: 1; min-width: 0; }
+    .od-pname { font-size: 15px; font-weight: 600; color: #f1f5f9; margin-bottom: 5px; text-decoration: none; display: inline-block; }
+    .od-pname:hover { color: #14b8a6; }
+    .od-sub { font-size: 13px; color: #94a3b8; }
+    .od-price { font-size: 15px; font-weight: 600; color: #e2e8f0; white-space: nowrap; }
+    .od-more-wrap { text-align: center; margin: 6px 0 14px; }
+    .od-more { background: #131c31; border: 1px solid #334155; color: #14b8a6; font-size: 13px; font-weight: 600; padding: 8px 20px; border-radius: 6px; cursor: pointer; transition: .2s; }
+    .od-more:hover { border-color: #14b8a6; background: rgba(20, 184, 166, 0.08); }
+    .od-foot { display: flex; flex-direction: column; align-items: flex-end; padding-top: 14px; gap: 12px; }
+    .od-total { font-size: 15px; color: #94a3b8; }
+    .od-total b { font-size: 18px; color: #f1f5f9; margin-left: 6px; }
+    .od-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .od-btn { padding: 8px 18px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; border: 1px solid #14b8a6; color: #14b8a6; background: transparent; transition: .2s; display: inline-block; }
+    .od-btn:hover { background: #14b8a6; color: #0f172a; }
+    .od-btn.sec { border-color: #38bdf8; color: #38bdf8; }
+    .od-btn.sec:hover { background: #38bdf8; color: #0f172a; }
+    .od-btn.danger { border-color: #f87171; color: #f87171; }
+    .od-btn.danger:hover { background: #ef4444; border-color: #ef4444; color: #fff; }
+    .od-empty { text-align: center; background: #131c31; border: 1px solid #243049; border-radius: 10px; padding: 44px 20px; color: #e2e8f0; font-size: 15px; font-weight: 600; }
+    .od-empty a { display: inline-block; margin-top: 14px; padding: 9px 22px; background: #14b8a6; color: #0f172a; border-radius: 6px; text-decoration: none; font-weight: 700; }
+    .od-modal { display: none; position: fixed; inset: 0; background: rgba(2, 6, 23, 0.78); z-index: 9999; align-items: center; justify-content: center; padding: 16px; }
+    .od-modal-box { background: #131c31; border: 1px solid #2a3954; border-radius: 12px; max-width: 520px; width: 100%; padding: 20px; color: #f1f5f9; }
+</style>
+
+<div class="od-wrap">
+    <div class="od-title">Đơn hàng của tôi</div>
+
+    @if (TempData["OrderMsg"] != null)
+    {
+        <div class="od-alert">@TempData["OrderMsg"]</div>
+    }
+
+    <div class="od-tabs" id="orderTabs">
+        <div class="od-tab active" data-filter="all" onclick="filterOrders('all', this)">Tất cả đơn</div>
+        <div class="od-tab" data-filter="pending" onclick="filterOrders('pending', this)">Chờ thanh toán</div>
+        <div class="od-tab" data-filter="processing" onclick="filterOrders('processing', this)">Đang xử lý</div>
+        <div class="od-tab" data-filter="shipping" onclick="filterOrders('shipping', this)">Đang vận chuyển</div>
+        <div class="od-tab" data-filter="delivered" onclick="filterOrders('delivered', this)">Đã giao</div>
+        <div class="od-tab" data-filter="cancelled" onclick="filterOrders('cancelled', this)">Đã huỷ</div>
+    </div>
+
+    <div class="od-search">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="orderSearchInput" placeholder="Tìm đơn hàng theo Mã đơn hàng hoặc Tên sản phẩm" onkeyup="applyOrderFilter()" />
+        <button type="button" onclick="applyOrderFilter()">Tìm đơn hàng</button>
+    </div>
+
+    <div id="orderList">
+        @for (int g = 0; g < statusKeys.Length; g++)
+        {
+            var gKey = statusKeys[g];
+            var gTitle = statusTitles[g];
+            var gColor = statusColors[g];
+
+            var groupOrders = new List<TranHoangKhai_25DH190104_BE.Models.Order>();
+            foreach (var item in allOrders)
+            {
+                var rawSt = (item.PaymentStatus ?? "").Trim().ToLower();
+                var mappedKey = "pending";
+                if (rawSt.Contains("huỷ") || rawSt.Contains("hủy") || rawSt.Contains("cancel")) { mappedKey = "cancelled"; }
+                else if (rawSt.Contains("giao thành công") || rawSt.Contains("đã giao") || rawSt.Contains("deliver") || rawSt.Contains("complete") || rawSt.Contains("paid") || rawSt.Contains("đã thanh toán")) { mappedKey = "delivered"; }
+                else if (rawSt.Contains("vận chuyển") || rawSt.Contains("đang giao") || rawSt.Contains("ship")) { mappedKey = "shipping"; }
+                else if (rawSt.Contains("xử lý") || rawSt.Contains("confirm") || rawSt.Contains("process")) { mappedKey = "processing"; }
+
+                if (mappedKey == gKey)
+                {
+                    groupOrders.Add(item);
+                }
+            }
+
+            if (groupOrders.Count > 0)
+            {
+                var limitedOrders = groupOrders.Take(50).ToList();
+                <div class="od-group" data-group-status="@gKey">
+                    <div class="od-group-title @gColor">
+                        <span>● @gTitle (@limitedOrders.Count)</span>
+                    </div>
+
+                    @for (int idx = 0; idx < limitedOrders.Count; idx++)
+                    {
+                        var o = limitedOrders[idx];
+                        var isExtraOrder = idx >= 2;
+                        var canCancel = (gKey == "pending" || gKey == "processing");
+                        var details = o.OrderDetails != null
+                            ? o.OrderDetails.ToList()
+                            : new List<TranHoangKhai_25DH190104_BE.Models.OrderDetail>();
+                        var firstProductId = details.Count > 0 ? details[0].ProductID : 0;
+                        var searchKeywords = ("#" + o.OrderID + " " + o.OrderID + " " + string.Join(" ", details.Select(d => d.Product != null ? d.Product.ProductName : ""))).ToLower();
+
+                        <div class="od-card @(isExtraOrder ? "extra-order-" + gKey : "")"
+                             data-status="@gKey"
+                             data-extra="@(isExtraOrder ? "1" : "0")"
+                             data-search="@searchKeywords"
+                             style="@(isExtraOrder ? "display:none" : "")">
+
+                            <div class="od-head">
+                                <div class="od-status @gColor">
+                                    <span>●</span>
+                                    <span>@gTitle</span>
+                                </div>
+                                <div style="color:#94a3b8">
+                                    Mã đơn: <b style="color:#f1f5f9">#@o.OrderID</b> &nbsp;|&nbsp; Ngày đặt: @o.OrderDate.ToString("dd/MM/yyyy")
+                                </div>
+                            </div>
+
+                            @foreach (var d in details)
+                            {
+                                var pName = d.Product != null ? d.Product.ProductName : "Sản phẩm #" + d.ProductID;
+                                var catName = (d.Product != null && d.Product.Category != null) ? d.Product.Category.CategoryName : "KHARI STORE";
+                                var rawImg = (d.Product != null && !string.IsNullOrEmpty(d.Product.ProductImage)) ? d.Product.ProductImage : "";
+                                var imgUrl = !string.IsNullOrEmpty(rawImg) ? (rawImg.StartsWith("~") ? Url.Content(rawImg) : rawImg) : "";
+
+                                <div class="od-item">
+                                    <a href="@Url.Action("ProductDetail", "Home", new { id = d.ProductID })" class="od-thumb">
+                                        @if (!string.IsNullOrEmpty(imgUrl))
+                                        {
+                                            <img src="@imgUrl" alt="@pName" />
+                                        }
+                                        else
+                                        {
+                                            <span style="font-size:22px">📦</span>
+                                        }
+                                        <span class="od-qty">x@(d.Quantity)</span>
+                                    </a>
+                                    <div class="od-info">
+                                        <a href="@Url.Action("ProductDetail", "Home", new { id = d.ProductID })" class="od-pname">@pName</a>
+                                        <div class="od-sub">Danh mục: @catName &nbsp;|&nbsp; Đơn giá: @d.UnitPrice.ToString("N0") ₫</div>
+                                    </div>
+                                    <div class="od-price">@((d.Quantity * d.UnitPrice).ToString("N0")) ₫</div>
+                                </div>
+                            }
+
+                            <div class="od-foot">
+                                <div class="od-total">Tổng tiền: <b>@o.TotalAmount.ToString("N0") ₫</b></div>
+                                <div class="od-actions">
+                                    @if (canCancel)
+                                    {
+                                        <button type="button" class="od-btn danger" onclick="openCancelModal(@o.OrderID)">Hủy đơn</button>
+                                    }
+                                    <a class="od-btn" href="@Url.Action("Reorder", "Order", new { id = o.OrderID })">Mua lại</a>
+                                    @if (firstProductId > 0)
+                                    {
+                                        <a class="od-btn sec" href="@Url.Action("ProductDetail", "Home", new { id = firstProductId })">Xem chi tiết</a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (limitedOrders.Count > 2)
+                    {
+                        <div class="od-more-wrap" id="moreWrap-@gKey">
+                            <button type="button" class="od-more" onclick="expandGroupOrders('@gKey', this)">
+                                Xem thêm (@(limitedOrders.Count - 2) đơn hàng)
+                            </button>
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </div>
+
+    <div class="od-empty" id="emptyOrderBox" style="@(allOrders.Count == 0 ? "" : "display:none")">
+        <div>BẠN CHƯA CÓ ĐƠN HÀNG NÀO. HÃY ĐẶT ĐƠN NGAY.</div>
+        <a href="@Url.Action("Index", "Home")">Về trang chủ mua sắm</a>
+    </div>
+</div>
+
+<!-- Modal xac nhan huy don -->
+<div class="od-modal" id="cancelOrderModal" onclick="if(event.target===this)this.style.display='none'">
+    <div class="od-modal-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #243049;padding-bottom:10px;margin-bottom:14px">
+            <b style="font-size:17px;color:#f87171">Xác nhận hủy đơn hàng</b>
+            <button type="button" onclick="document.getElementById('cancelOrderModal').style.display='none'" style="background:none;border:none;color:#94a3b8;font-size:20px;cursor:pointer">&times;</button>
+        </div>
+        <p style="margin:10px 0 18px;font-size:14px;line-height:1.6;color:#cbd5e1">
+            Bạn có chắc chắn muốn hủy đơn hàng <b id="cancelOrderLabel" style="color:#f1f5f9"></b> không? Thao tác này không thể hoàn tác.
+        </p>
+        @using (Html.BeginForm("CancelOrder", "Order", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" id="cancelOrderId" />
+            <div style="display:flex;justify-content:flex-end;gap:10px">
+                <button type="button" class="od-btn sec" onclick="document.getElementById('cancelOrderModal').style.display='none'">Đóng</button>
+                <button type="submit" class="od-btn danger" style="background:#ef4444;color:#fff;border-color:#ef4444">Xác nhận hủy</button>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    var currentTab = 'all';
+    var expandedGroups = {};
+
+    function filterOrders(status, el) {
+        currentTab = status;
+        var tabs = document.querySelectorAll('.od-tab');
+        for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
+        el.classList.add('active');
+        applyOrderFilter();
+    }
+
+    function expandGroupOrders(statusKey, btn) {
+        expandedGroups[statusKey] = true;
+        var extras = document.querySelectorAll('.extra-order-' + statusKey);
+        for (var i = 0; i < extras.length; i++) {
+            extras[i].style.display = 'block';
+        }
+        if (btn && btn.parentNode) {
+            btn.parentNode.style.display = 'none';
+        }
+    }
+
+    function applyOrderFilter() {
+        var kw = (document.getElementById('orderSearchInput').value || '').trim().toLowerCase();
+        var groups = document.querySelectorAll('.od-group');
+        var totalVisibleCards = 0;
+
+        for (var g = 0; g < groups.length; g++) {
+            var gStatus = groups[g].getAttribute('data-group-status');
+            var matchGroup = (currentTab === 'all' || gStatus === currentTab);
+
+            if (!matchGroup) {
+                groups[g].style.display = 'none';
+                continue;
+            }
+
+            var cards = groups[g].querySelectorAll('.od-card');
+            var groupVisibleCards = 0;
+
+            for (var c = 0; c < cards.length; c++) {
+                var text = cards[c].getAttribute('data-search') || '';
+                var isExtra = cards[c].getAttribute('data-extra') === '1';
+
+                if (kw) {
+                    if (text.indexOf(kw) !== -1) {
+                        cards[c].style.display = 'block';
+                        groupVisibleCards++;
+                    } else {
+                        cards[c].style.display = 'none';
+                    }
+                } else {
+                    if (!isExtra || expandedGroups[gStatus]) {
+                        cards[c].style.display = 'block';
+                        groupVisibleCards++;
+                    } else {
+                        cards[c].style.display = 'none';
+                    }
+                }
+            }
+
+            var moreWrap = document.getElementById('moreWrap-' + gStatus);
+            if (moreWrap) {
+                moreWrap.style.display = (!kw && !expandedGroups[gStatus]) ? 'block' : 'none';
+            }
+
+            groups[g].style.display = groupVisibleCards > 0 ? 'block' : 'none';
+            totalVisibleCards += groupVisibleCards;
+        }
+
+        document.getElementById('emptyOrderBox').style.display = totalVisibleCards === 0 ? 'block' : 'none';
+    }
+
+    function openCancelModal(id) {
+        document.getElementById('cancelOrderId').value = id;
+        document.getElementById('cancelOrderLabel').innerText = '#' + id;
+        document.getElementById('cancelOrderModal').style.display = 'flex';
+    }
+</script>

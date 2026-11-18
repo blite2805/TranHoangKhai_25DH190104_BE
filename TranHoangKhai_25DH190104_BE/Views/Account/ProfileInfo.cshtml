@@ -1,26 +1,28 @@
 @model TranHoangKhai_25DH190104_BE.Models.Customer
-@{ ViewBag.Title = "Thông tin tài khoản"; }
+@{
+    ViewBag.Title = "Thông tin tài khoản";
+}
 <h2>Thông tin tài khoản</h2>
 <div class="panel">
- <p><b>Tên đăng nhập:</b> @User.Identity.Name</p>
- <p><b>Họ tên:</b> @Model?.CustomerName</p>
- @using (Html.BeginForm("UpdateProfile", "Account", FormMethod.Post, new { @class = "f" }))
- {
-    @Html.AntiForgeryToken()
-    <h3>Thay đổi thông tin</h3>
-    <label>Số điện thoại <input name="CustomerPhone" value="@Model?.CustomerPhone"></label>
-    <label>Email <input name="CustomerEmail" value="@Model?.CustomerEmail"></label>
-    <label>Địa chỉ <input name="CustomerAddress" value="@Model?.CustomerAddress"></label>
-    <button type="submit">Cập nhật</button>
- }
+    <p><b>Tên đăng nhập:</b> @User.Identity.Name</p>
+    <p><b>Họ tên:</b> @(Model != null ? Model.CustomerName : "")</p>
+    @using (Html.BeginForm("UpdateProfile", "Account", FormMethod.Post, new { @class = "f" }))
+    {
+        @Html.AntiForgeryToken()
+        <h3>Thay đổi thông tin</h3>
+        <label>Số điện thoại <input name="CustomerPhone" value="@(Model != null ? Model.CustomerPhone : "")"></label>
+        <label>Email <input name="CustomerEmail" value="@(Model != null ? Model.CustomerEmail : "")"></label>
+        <label>Địa chỉ <input name="CustomerAddress" value="@(Model != null ? Model.CustomerAddress : "")"></label>
+        <button type="submit">Cập nhật</button>
+    }
 </div>
 <div class="panel">
- @using (Html.BeginForm("ChangePassword", "Account", FormMethod.Post, new { @class = "f" }))
- {
-    @Html.AntiForgeryToken()
-    <h3>Đổi mật khẩu</h3>
-    <label>Mật khẩu cũ <input type="password" name="oldPwd"></label>
-    <label>Mật khẩu mới (từ 6 ký tự) <input type="password" name="newPwd"></label>
-    <button type="submit">Đổi mật khẩu</button>
- }
+    @using (Html.BeginForm("ChangePassword", "Account", FormMethod.Post, new { @class = "f" }))
+    {
+        @Html.AntiForgeryToken()
+        <h3>Đổi mật khẩu</h3>
+        <label>Mật khẩu cũ <input type="password" name="oldPwd"></label>
+        <label>Mật khẩu mới (từ 6 ký tự) <input type="password" name="newPwd"></label>
+        <button type="submit">Đổi mật khẩu</button>
+    }
 </div>

@@ -1,16 +1,67 @@
 @model TranHoangKhai_25DH190104_BE.Models.Product
+@{
+    var imgSrc = "";
+    if (Model != null && !string.IsNullOrEmpty(Model.ProductImage))
+    {
+        imgSrc = Model.ProductImage.StartsWith("~") ? Url.Content(Model.ProductImage) : Model.ProductImage;
+    }
+    var urlValue = (Model != null && !string.IsNullOrEmpty(Model.ProductImage) && Model.ProductImage.StartsWith("http"))
+        ? Model.ProductImage
+        : "";
+}
 @using (Html.BeginForm(ViewContext.RouteData.Values["action"].ToString(), "Products", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true, "", new { @class = "err" })
-    @Html.HiddenFor(m => m.ProductID)
+    if (Model != null)
+    {
+        @Html.HiddenFor(m => m.ProductID)
+        @Html.HiddenFor(m => m.ProductImage)
+    }
     <div class="f">
-        <label>Tên sản phẩm * @Html.EditorFor(m => m.ProductName, new { htmlAttributes = new { @class = "form-control" } }) @Html.ValidationMessageFor(m => m.ProductName, "", new { @class = "err" })</label>
-        <label>Danh mục @Html.DropDownList("CategoryID", null, htmlAttributes: new { @class = "form-control" })</label>
-        <label>Giá (đồng) * @Html.EditorFor(m => m.ProductPrice, new { htmlAttributes = new { @class = "form-control", type = "number", min = "0" } }) @Html.ValidationMessageFor(m => m.ProductPrice, "", new { @class = "err" })</label>
-        <label>Mô tả @Html.TextAreaFor(m => m.ProductDecription, new { @class = "form-control", rows = 3 })</label>
-        <label>Ảnh sản phẩm (upload lên ~/Content/images) <input type="file" name="UploadImg" accept="image/*"></label>
-        @if (!string.IsNullOrEmpty(Model.ProductImage)) { <label>Ảnh hiện tại: <img src="@Model.ProductImage" style="max-height:80px"></label> }
+        <label>
+            Tên sản phẩm *
+            @Html.EditorFor(m => m.ProductName, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(m => m.ProductName, "", new { @class = "err" })
+        </label>
+
+        <label>
+            Danh mục
+            @Html.DropDownList("CategoryID", null, htmlAttributes: new { @class = "form-control" })
+        </label>
+
+        <label>
+            Giá (đồng) *
+            <input type="number" name="ProductPrice" id="ProductPrice" class="form-control" min="0" step="1000"
+                   value="@(Model != null ? string.Format("{0:0}", Model.ProductPrice) : "")" />
+            @Html.ValidationMessageFor(m => m.ProductPrice, "", new { @class = "err" })
+        </label>
+
+        <label>
+            Mô tả
+            @Html.TextAreaFor(m => m.ProductDecription, new { @class = "form-control", rows = 3 })
+        </label>
+
+        <label>
+            Ảnh sản phẩm (upload lên ~/Content/images)
+            <input type="file" name="UploadImg" accept="image/*"
+                   onchange="if(this.files && this.files[0]){var img=document.getElementById('imgPreview');img.src=URL.createObjectURL(this.files[0]);img.style.display='block';}" />
+        </label>
+
+        <label>
+            Hoặc dán link ảnh online (URL)
+            <input type="url" name="ImageUrl" id="ImageUrl" class="form-control" placeholder="https://example.com/anh-san-pham.jpg"
+                   value="@urlValue"
+                   oninput="var img=document.getElementById('imgPreview'); if(this.value){img.src=this.value;img.style.display='block';}else{img.style.display='none';}" />
+        </label>
+
+        <label>
+            Xem trước ảnh:
+            <img id="imgPreview"
+                 src="@imgSrc"
+                 style="max-height:100px;margin-top:6px;border-radius:8px;@(string.IsNullOrEmpty(imgSrc) ? "display:none" : "display:block")" />
+        </label>
+
         <button type="submit" class="btn">Lưu</button>
     </div>
 }
